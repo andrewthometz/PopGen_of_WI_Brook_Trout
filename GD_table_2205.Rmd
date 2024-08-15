@@ -1,0 +1,169 @@
+---
+output:
+  
+  word_document: default
+
+---
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+library(rstatix)
+library(broom)
+library(ggsignif)
+library(ggplot2)
+library(kableExtra)
+library(readxl)
+library(flextable)
+library(lubridate)
+
+library(tidyverse)
+library(readr)
+library(adegenet)
+library(poppr)
+library(radiator)
+
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+#### Read in data ####
+# Read in 2205 genetic data
+Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
+                          ncode = 3L, 
+                          quiet = FALSE)
+
+# Read in project metadata
+Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+  filter(SampleID %in% rownames(Data_2205@tab)) %>% 
+  arrange(match(SampleID, rownames(Data_2205@tab)))
+
+# Fill the pop slots
+Data_2205@pop <- as_factor(Samples_2205$WaterbodyName)
+
+# Average number of alleles per locus
+nAll(Data_2205) %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "Marker") %>% 
+  as_tibble() %>% 
+  rename("n_alleles" = ".") %>% 
+  count(n_alleles) %>% 
+  summarize(mean_alleles = mean(n_alleles),
+            range_alleles = range(n_alleles))
+
+nAll(Data_2205) %>% 
+  as.data.frame() %>% 
+  rownames_to_column(var = "Marker") %>% 
+  as_tibble() %>% 
+  rename("n_alleles" = ".")
+
+#### Calculate genetic diversity measures ####
+library(hierfstat)
+
+gd <- basic.stats(Data_2205)
+
+H_expected <- as.data.frame.matrix(gd$Hs) %>% 
+  as_tibble(rownames = "locus") %>% 
+  pivot_longer(2:64,
+               names_to = "pop",
+               values_to = "He") %>% 
+  drop_na(He) %>% 
+  group_by(pop) %>% 
+  summarize("He" = round(mean(He), 3))
+
+H_observed <- as.data.frame.matrix(gd$Ho) %>% 
+  as_tibble(rownames = "locus") %>% 
+  pivot_longer(2:64,
+               names_to = "group",
+               values_to = "Ho") %>% 
+  drop_na(Ho) %>% 
+  group_by(group) %>% 
+  summarize("Ho" = round(mean(Ho), 3))
+
+F_is <- as.data.frame.matrix(gd$Fis) %>% 
+  as_tibble(rownames = "locus") %>% 
+  pivot_longer(2:64,
+               names_to = "group",
+               values_to = "Fis") %>% 
+  drop_na(Fis) %>% 
+  group_by(group) %>% 
+  summarize("Fis" = round(mean(Fis), 3))
+
+Allelic_richness <- as.data.frame(allelic.richness(Data_2205)) %>% 
+  as_tibble(rownames = "locus") %>% 
+  select(-min.all) %>% 
+  pivot_longer(2:64,
+               names_to = "group",
+               values_to = "ar") %>% 
+  drop_na(ar) %>% 
+  group_by(group) %>% 
+  summarize("ar" = round(mean(ar), 3))
+
+GD_tibble <- bind_cols(H_expected$pop,
+                       Allelic_richness$ar, 
+                       H_observed$Ho, 
+                       H_expected$He,
+                       F_is$Fis) %>% 
+  rename("WaterbodyName" = 1,
+         "Ar" = 2,
+         "Ho" = 3, 
+         "He" = 4,
+         "Fis" = 5)
+
+# Bring in Hatch int data
+hatch_int <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Hatchery_introgression/Hatchery_ID_2205.csv") %>% 
+  select(WaterbodyName, Ave_hatchery_ID) %>% 
+  mutate(Ave_hatchery_ID = round(Ave_hatchery_ID*100, 2))
+
+# Bring in Ne data and join stuff
+Ne_output <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") 
+
+samples_temp <- Samples_2205 %>% 
+  select(SampleID, Latitude, Longitude, WaterbodyName, HUC_8)
+
+final_table <- Ne_output %>% 
+  select(SampleID, Sample_size, Ne, Low_jk, High_jk) %>% 
+  left_join(samples_temp) %>% 
+  mutate(Ne = case_when(Ne < 0 ~ "Inf", .default = as.character(Ne))) %>% 
+  unite(Jackknives, c(Low_jk, High_jk), sep = " - ") %>% 
+  mutate(Jackknives = paste0("(", Jackknives, ")")) %>% 
+  unite(Ne, c(Ne, Jackknives), sep = " ") %>% 
+  select(WaterbodyName, Latitude, Longitude, HUC_8, Sample_size, Ne) %>% 
+  left_join(GD_tibble) %>% 
+  left_join(hatch_int) %>% 
+  arrange(HUC_8, WaterbodyName)
+
+write.csv(final_table, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv",
+          row.names = FALSE)
+
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+final_table %>% 
+  rename(Waterbody = WaterbodyName, 
+         HUC8_Subbasin = HUC_8) %>% 
+  flextable() %>% 
+  fontsize(size = 11, part = "all") %>% 
+  colformat_num(big.mark = "") %>% 
+  autofit()
+  #set_flextable_defaults(font.size = 11) #%>% 
+  #align("left")
+  #font(part = 'all', fontname = 'Calibri')
+
+```
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+
+# Great Lakes vs Upper Mississippi allelic richness test
+
+Upper_mis <- GD_tibble %>% 
+  left_join(Samples_2205) %>% 
+  filter(HUC_2 == "Upper Mississippi Region")
+
+Great_lakes <- GD_tibble %>% 
+  left_join(Samples_2205) %>% 
+  filter(HUC_2 == "Great Lakes Region")
+
+t.test(Great_lakes$Ar, Upper_mis$Ar)
+
+```
