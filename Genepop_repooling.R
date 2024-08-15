@@ -10,7 +10,7 @@ Erdman_gen <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdm
                            ncode = 3L,
                            quiet = FALSE)
 
-# Read in gen file including all 63 pops plus 30 random St. Croix Falls domestics
+# Read in .gen file containing all 63 pops plus 30 random St. Croix Falls domestic fish
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
