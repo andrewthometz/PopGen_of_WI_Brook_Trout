@@ -1,3 +1,4 @@
+# Load necessary packages
 library(car)
 library(ggsignif)
 library(tidyverse)
@@ -8,8 +9,11 @@ library(adegenet)
 #library(zoib)
 library(brms)
 
-#### Read in data ####
-# Read in 2205 project metadata
+##########################################################################################
+#### Run regression models to identify potential relationships with hatchery ancestry ####
+##########################################################################################
+
+# Read in project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv")
 
 # Read in WDNR stocking data for relevant HUC12s
@@ -42,14 +46,16 @@ Modeling_data <- Samples_2205 %>%
   mutate(Total_n_stocked = replace_na(Total_n_stocked, 0)) %>% 
   mutate(n_stocking_events = replace_na(n_stocking_events, 0)) 
 
-#### Model variables ####
+##################################
+#### Describe model variables ####
+##################################
 
-## Response variables: 
+#### Response variables: ####
 # Proportion of fish with hatchery assignment probability >= 25% (scrapped this because not very useful)
 # Proportion of fish with hatchery assignment probability >= 75% (scrapped this becuase not very useful)
 # Average assignment probability to hatchery ancestry
 
-## Predictor variables:
+#### Predictor variables: ####
 # Total number of fish stocked in HUC12 watershed
 # Number of stocking events in HUC12 watershed
 # Years since the mean of stocking years in HUC12 watershed
@@ -57,7 +63,8 @@ Modeling_data <- Samples_2205 %>%
 # Relative stocking intensity (e.g., number of fish stocked / Ne) ?
 
 #### Average assignment probability to hatchery ancestry ####
-# Total number of fish stocked in HUC12 watershed positively influences mean hatchery identity
+# Hypothesis 1:
+# Total number of fish stocked in HUC12 watershed is positively related to mean hatchery identity
 Modeling_data_temp <- Modeling_data %>% 
   select(-Yrs_since_stocking) # Doing this because NAs in this column are problematic
 
@@ -78,7 +85,7 @@ Modeling_data %>%
   theme_classic()
 
 # Hypothesis 2: 
-# Number of stocking events in HUC12 watershed positively influences mean hatchery identity
+# Number of stocking events in HUC12 watershed is positively related to mean hatchery identity
 model_1b <- gamlss(Ave_hatchery_ID ~ n_stocking_events, 
                    family = BEZI, 
                    data = na.omit(Modeling_data))
@@ -96,7 +103,7 @@ Modeling_data %>%
   theme_classic()
 
 # Hypothesis 3: 
-# Mean stocking year in HUC12 watershed positively influences mean hatchery identity
+# Mean stocking year in HUC12 watershed is positively related to mean hatchery identity
 model_1c <- gamlss(Ave_hatchery_ID ~ Yrs_since_stocking, 
                    family = BEZI, 
                    data = na.omit(Modeling_data))
@@ -114,7 +121,7 @@ Modeling_data %>%
   theme_classic()
 
 # Hypothesis 4: 
-# Ne negatively influences mean hatchery identity
+# Ne is negatively related to mean hatchery identity
 Modeling_data2 <- Modeling_data %>% 
   filter(Ne != "Inf")
 
@@ -133,22 +140,3 @@ Modeling_data2 %>%
   xlab("Effective population size (Ne)") +
   ylab("Mean hatchery identity") +
   theme_classic()
-
-#### Try modeling multivariate hypotheses ####
-# Hypothesis 1: 
-# Relative stocking intensity positively influences mean hatchery identity
-model_2a <- glm(Ave_hatchery_ID ~ Total_n_stocked + n_stocking_events, 
-                family = binomial(link = "logit"), 
-                data = Modeling_data)
-
-summary(model_2a)
-
-# Modeling_data %>% 
-#   ggplot(aes(y = Ave_hatchery_ID)) + 
-#   geom_smooth(method = "glm") +
-#   geom_point() +
-#   scale_x_continuous(expand = c(0, 0)) +
-#   scale_y_continuous(limits = c(0,1), expand = c(0, 0)) +
-#   xlab("") +
-#   ylab("Mean hatchery identity") +
-#   theme_classic()
