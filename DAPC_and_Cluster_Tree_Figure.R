@@ -6,12 +6,13 @@ library(RColorBrewer)
 library(patchwork)
 library(ggh4x)
 
-
 library(BiocManager)
 #BiocManager::install("YuLab-SMU/treedataverse")
 library(treedataverse)
 
-# Create a 3-panel figure including all three cluster trees
+######################################################################################
+#### Run DAPC and create a figure including cluster trees from DAPC and STRUCTURE ####
+######################################################################################
 
 ################ DAPC K = 7 ###########################################
 
