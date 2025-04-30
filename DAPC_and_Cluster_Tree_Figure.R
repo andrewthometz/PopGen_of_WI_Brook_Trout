@@ -14,8 +14,7 @@ library(treedataverse)
 #### Run DAPC and create a figure including cluster trees from DAPC and STRUCTURE ####
 ######################################################################################
 
-################ DAPC K = 7 ###########################################
-
+#### Run DAPC at K = 7 Clusters ####
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
