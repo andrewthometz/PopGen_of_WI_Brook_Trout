@@ -3,7 +3,9 @@ library(tidyverse)
 library(adegenet)
 library(poppr)
 
+####################################################################
 #### Create conversion factor for CE and Amplicon genotype data ####
+####################################################################
 
 # Read in final locus selections
 Locus_data <- read_excel("X:/2111_F1F2D_BKT/BKT_Locus_Evaluation.xlsx") %>% 
@@ -52,7 +54,7 @@ Amplicon_genotypes <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_pair
                               SampleID == "17-03014" ~ "17-03056",
                               SampleID == "17-03015" ~ "17-03057",
                               SampleID == "17-03016" ~ "17-03058",
-                              
+            
                               SampleID == "17-03051" ~ "17-03009",
                               SampleID == "17-03052" ~ "17-03010",
                               SampleID == "17-03053" ~ "17-03011",
@@ -60,8 +62,7 @@ Amplicon_genotypes <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_pair
                               SampleID == "17-03055" ~ "17-03013",
                               SampleID == "17-03056" ~ "17-03014",
                               SampleID == "17-03057" ~ "17-03015",
-                              SampleID == "17-03058" ~ "17-03016",
-                              .default = SampleID))
+                              SampleID == "17-03058" ~ "17-03016", .default = SampleID))
 
 colnames(Amplicon_genotypes) <- Amplicon_genotypes %>% 
   colnames() %>% 
