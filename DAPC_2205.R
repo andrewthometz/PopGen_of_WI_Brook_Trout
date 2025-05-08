@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -75,14 +76,12 @@ DAPC_1_optimal <- dapc.genind(Data_2205,
                               n.da = nPop(Data_2205))
 summary(DAPC_1_optimal)
 
-##########################
-#### Plot the results ####
-
+#### Plot the DAPC results ####
 # Create custom color palette
 brewer.pal(n = 7, name = "Set1")
 K7_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "yellow3", "#A65628")
 
-# Plot cluster membership probabilities
+# Reorder and rename the clusters to match desired colors and names
 DAPC_1_probs <- DAPC_1_optimal$posterior %>%
   as_tibble(rownames = "SampleID") %>% 
   rename(K1 = `4`,
@@ -103,6 +102,8 @@ DAPC_1_probs_longer <- DAPC_1_probs %>%
          Cluster = fct_relevel(Cluster, c("1 (St. Croix Falls Strain)", "2", "3", "4", "5", "6", "7")),
          HUC_8 = fct_relevel(HUC_8, "Hatchery", after = Inf))
 
+# Plot cluster membership probabilities
+# First plot is for Upper Mississippi Region (Western WI)
 DAPC_plot1 <- DAPC_1_probs_longer %>% 
   filter(HUC_2 == "Upper Mississippi Region") %>% 
   ggplot(aes(x = SampleID, y = Probability, fill = Cluster)) +
@@ -127,6 +128,7 @@ DAPC_plot1 <- DAPC_1_probs_longer %>%
         strip.text.x = element_text(angle = -90,
                                     hjust = 0))
 
+# Second plot is for Great Lakes Region (Eastern WI)
 DAPC_plot2 <- DAPC_1_probs_longer %>% 
   filter(HUC_2 == "Great Lakes Region" |
          HUC_2 == "Hatchery") %>% 
@@ -156,6 +158,7 @@ DAPC_plot2 <- DAPC_1_probs_longer %>%
         legend.direction = "horizontal") +
   guides(fill = guide_legend(nrow = 1))
 
+# Consolidate the two HUC plots and save
 DAPC_plots <- DAPC_plot1 / DAPC_plot2
 
 ggsave(filename = "DAPC_str_plot.pdf",
@@ -174,8 +177,9 @@ ggsave(filename = "DAPC_str_plot.png",
        width = 14,
        units = "in")
 
-############################
-#### Plot them on a map ####
+######################################################
+#### Depict the membership probabilities on a map ####
+######################################################
 
 # Read in necessary shape files
 HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
@@ -184,13 +188,13 @@ HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Ba
 
 WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
-# Prep admixture df and lat long df for mapmixture function
+# Prep admixture df and lat/long df for mapmixture function
 DAPC_mapmixture <- DAPC_1_probs %>% 
   left_join(Samples_2205) %>% 
   select(WaterbodyName, SampleID, K1, K2, K3, K4, K5, K6, K7) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain")
 
-# These are intentionally incorrect, revised for ease of viewing
+# Manually tweak the lats/longs so that the pie charts will not overlap on the map
 Lats_Longs <- Samples_2205 %>% 
   select(WaterbodyName, Latitude, Longitude) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain") %>% 
@@ -240,6 +244,7 @@ DAPC_map <- mapmixture(admixture_df = DAPC_mapmixture,
           legend.text = element_text(size = 8),
           axis.text = element_text(size = 6))
 
+# Save
 ggsave(filename = "DAPC_map.pdf",
        plot = DAPC_map,
        device = "pdf",
@@ -256,8 +261,11 @@ ggsave(filename = "DAPC_map.png",
        width = 5,
        units = "in")
 
-#############################################
-#### Try running DAPC as ordination plot ####
+#########################################
+#### Display DAPC as ordination plot ####
+#########################################
+
+# Grab membership probabilities from above and filter to greatest membership by fish
 ind_clusters <- DAPC_1_probs_longer %>% 
   group_by(SampleID) %>% 
   filter(Probability == max(Probability))
@@ -280,7 +288,7 @@ centroid_coords <- DAPC_1_optimal$grp.coord %>%
          Cluster = str_replace(Cluster, "1", "1 (St. Croix Falls Strain)"),
          Cluster = fct_relevel(Cluster, c("1 (St. Croix Falls Strain)", "2", "3", "4", "5", "6", "7")))
                                
-# df 1 and 2
+# Discriminant functions 1 and 2
 ord_plot_1 <- ind_coords %>% 
   ggplot(aes(x = LD1, y = LD2, color = ind_clusters$Cluster)) +
   geom_point(alpha = 0.25) +
@@ -307,7 +315,7 @@ ord_plot_1 <- ind_coords %>%
   theme_classic() +
   theme(legend.position = "none")
   
-# df 2 and 3
+# Discriminant functions 2 and 3
 ord_plot_2 <- ind_coords %>% 
   ggplot(aes(x = LD2, y = LD3, color = ind_clusters$Cluster)) +
   geom_point(alpha = 0.25) +
@@ -334,6 +342,7 @@ ord_plot_2 <- ind_coords %>%
   theme_classic() +
   theme(legend.position = "none")
 
+# Consolidate the plots and save
 ord_plot <- ord_plot_1 / ord_plot_2
 
 ggsave(filename = "DAPC_ordplot.pdf",
@@ -350,72 +359,6 @@ ggsave(filename = "DAPC_ordplot.png",
        path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/DAPC",
        height = 9,
        width = 9,
-       units = "in")
-
-## Create tree to visualize cluster relatedness (and ensure correct color assignment for plots) ##
-# Filter to fish with at least 75% assignment to a given cluster
-DAPC_probs_filtered <- DAPC_1_probs_longer %>% 
-  filter(Probability >= 0.75) %>% 
-  select(SampleID, Cluster)
-
-# Revise Samples_2205 to make popsub possible
-Samples_revised <- Samples_2205 %>% 
-  left_join(DAPC_probs_filtered) %>% 
-  mutate(Cluster = case_when(is.na(Cluster) ~ "sub_75", .default = Cluster))
-
-# Fill the pop slots
-Data_2205@pop <- as_factor(Samples_revised$Cluster)
-
-Data_2205_filtered <- popsub(Data_2205, exclude = "sub_75")
-
-# Build initial tree (creates phylo object)
-Phylo_tree <- aboot(Data_2205_filtered,
-                    strata = Data_2205_filtered@pop,
-                    distance = "nei.dist",
-                    cutoff = 1,
-                    tree = "nj") # Do "nj" instead of default "upgma" to make dendrogram
-
-# Turn phylo object into tibble to add huc data
-tree_tibble <- Phylo_tree %>% 
-  as_tibble() %>% 
-  mutate(Cluster = case_when(label %in% Samples_revised$Cluster ~ label, .default = NA),
-         Bootstraps = case_when(!(label %in% Samples_revised$Cluster) ~ label, .default = NA))
-
-# Convert tibble into treedata object for ggtree plotting
-Tree_data <- as.treedata(tree_tibble)
-
-# Plot treedata object using ggtree (dendrogram)
-tree_1 <- ggtree(Tree_data, 
-                 aes(color = Cluster), 
-                 size = 1,
-                 show.legend = FALSE) +
-  geom_tiplab(show.legend = FALSE) +
-  geom_treescale(color = "black",
-                 linesize = 1) +
-  geom_text(aes(label = Bootstraps),
-            hjust = -0.25,
-            size = 2,
-            show.legend = FALSE) +
-  scale_colour_manual(#name = "Cluster", # Can use this or scale_color_discrete()
-    na.value = "black",
-    values = K7_colors) +
-  xlim(0, 0.2) + # This can help make tree fit
-  labs(title = "DAPC clusters (K = 7)")
-
-ggsave(filename = "DAPC_Cluster_Tree.pdf",
-       plot = tree_1,
-       device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Trees",
-       height = 4,
-       width = 7,
-       units = "in")
-
-ggsave(filename = "DAPC_Cluster_Tree.png",
-       plot = tree_1,
-       device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Trees",
-       height = 4,
-       width = 7,
        units = "in")
 
 
