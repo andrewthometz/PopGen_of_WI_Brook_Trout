@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -9,7 +10,10 @@ library(poppr)
 library(PopGenReport)
 library(radiator)
 
-#### Read in data ####
+##################################################################################################################################################
+#### Isolate populations that are believed to be native and hybridize them to synthesize a population of prototypical "WI native" brook trout ####
+##################################################################################################################################################
+
 # Read in 2205 genetic data
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
                           ncode = 3L, 
@@ -39,15 +43,20 @@ St.Croix_HD@pop <- as_factor(temp$WaterbodyName)
 Joined_genind <- repool(Data_2205, St.Croix_HD)
 
 #### Calculate individual level genetic distance ####
-# Takes ~ 5 min to run
-#gd.smouse(Joined_genind, verbose = TRUE) %>% 
-#  tidy() %>% 
-#  write.csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/gd.smouse.csv")
+# Beware this takes ~ 5 min to run
+gd.smouse(Joined_genind, verbose = TRUE) %>% 
+  tidy() %>% 
+  write.csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/gd.smouse.csv")
 
+# Read the results back in
 result_tidy <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/gd.smouse.csv") %>% 
   select(-1)
 
-### Filter to find HUC12s with no bkt stocking history (10 pops) #### Needed to be manually reviewed
+###########################################################################################
+#### Filter to find HUC 12s with no recorded history of brook trout stocking (10 pops) ####
+###########################################################################################
+# Needed to be manually reviewed due to adjacent stocking events
+
 # Read in WDNR stocking database #
 Stocking_data <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Stocking_histories_2205.csv")
 
@@ -65,7 +74,7 @@ never_stocked <- Samples_2205 %>%
 
 never_stocked %>% count(WaterbodyName)
 
-#### Filter down to fish with greatest genetic distance from St.Croix domestic hybrids (upper 25%) ####
+#### Filter down to fish with greatest genetic distance from St.Croix domestic hybrids (upper 25%) and divide into two random groups ####
 Distinct_bkt <- result_tidy %>% 
   filter(!str_detect(item1, "HD"),
          str_detect(item2, "HD")) %>% 
@@ -90,7 +99,7 @@ Distinct_bkt %>%
 Distinct_bkt %>% 
   count(Group)
 
-# Bring randomized groupings back to Samples_2205
+# Bring the two random groupings into Samples_2205 metadata
 Samples_2205 <- Distinct_bkt %>% 
   select(SampleID, Group) %>% 
   right_join(Samples_2205)
@@ -102,7 +111,7 @@ Group_1 <- popsub(Data_2205, "1")
 
 Group_2 <- popsub(Data_2205, "2")
 
-#### Hybridize wild fish to create the population of "Native WI" brook trout ####
+#### Hybridize wild fish to create the population of "WI Native" brook trout ####
 hybridize(Group_1, Group_2,
           n = 100,
           pop = "Hybrid_native",
@@ -112,7 +121,7 @@ hybridize(Group_1, Group_2,
   write_genepop(genepop.header = "Hybridized native fish (n = 100)",
                 filename = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/Hybridized_natives")
 
-# Read in Hybrid Native genetic data
+# Read the Hybrid Native genetic data back in
 Hybrid_natives <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/Hybridized_natives.gen",
                                ncode = 3L, 
                                quiet = FALSE)
@@ -120,9 +129,13 @@ Hybrid_natives <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/
 temp <- tibble(Hybrid_type = rep("Hybrid_native", 100))
 Hybrid_natives@pop <- as_factor(temp$Hybrid_type)
 
-#### Map the unstocked populations to ensure even coverage of state ####
+###########################################################################################
+#### Map the unstocked populations to ensure even coverage/representation across state ####
+###########################################################################################
+
 library(sf)
 library(ggspatial)
+
 # Read in necessary shape files
 HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
@@ -137,7 +150,7 @@ unstocked_map <- Samples_2205 %>%
   st_as_sf(coords = c("Longitude", "Latitude"),
            crs = 4326)
   
-# Standard map
+# Produce standard map
 Standard_map <- WMU_shp %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -163,3 +176,4 @@ Standard_map <- WMU_shp %>%
                          pad_y = unit(0.4, "in"),
                          style = north_arrow_fancy_orienteering) +
   theme_classic()
+
