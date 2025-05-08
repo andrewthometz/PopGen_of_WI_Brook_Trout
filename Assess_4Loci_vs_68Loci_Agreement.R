@@ -226,11 +226,36 @@ Fis_plot <- GD_comparison %>%
        title = bquote("Inbreeding coefficient"~(F[IS]))) +
   theme_classic()
 
-#### Bring in Gst data for four panel plot ####
+##############################################################################################
+#### Estimate Nei's GST using just 4 loci and see if they align with results from 68 loci ####
+##############################################################################################
+
+fctLevelOrder <- Samples_2205 %>% 
+  distinct(WaterbodyName) %>% 
+  arrange(WaterbodyName)
+
+Samples_2205 <- Samples_2205 %>% 
+  mutate(WaterbodyName = fct_relevel(WaterbodyName, fctLevelOrder$WaterbodyName))
+
+# Fill the pop slots
+Data_2205_4loci@pop <- as_factor(Samples_2205$WaterbodyName)
+
+# Run the analysis
+gstMatrix <- pairwise_Gst_Nei(Data_2205_4loci)
+
+gst_tidy <- gstMatrix %>% 
+  tidy()
+
+# Write the results to CSV
+gst_tidy %>% write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Locus_testing/Gst_4loci.csv")
+
+# Read the results back in
 gst_4loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Locus_testing/Gst_4loci.csv")
 
+# Read in the 2205 project GST estimates
 gst_68loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/Gst_Fst/pwise_dist_2205.csv")
 
+# Bring them together for comparison
 gst_comparison <- gst_4loci %>% 
   rename(dist_4loci = distance) %>% 
   left_join(gst_68loci) %>% 
@@ -240,7 +265,7 @@ gst_comparison <- gst_4loci %>%
   mutate(dist_4loci = round(dist_4loci, 3),
          dist_68loci = round(dist_68loci, 3))
 
-#### Run linear regression to assess agreement between 4 loci and 68 loci ####
+# Run linear regression and plot to assess GST agreement between 4 loci and 68 loci
 lm_dist = lm(dist_4loci ~ dist_68loci, data = gst_comparison)
 
 summary(lm_dist)
@@ -275,7 +300,10 @@ gst_plot <- gst_comparison %>%
   theme_classic() +
   theme(plot.margin = margin(10, 10, 10, 10))
 
-#### Now arrange them nicely in four panel plot ####
+#####################################################################################
+#### Consolidate genetic diversity and GST plots into a four panel plot and save ####
+#####################################################################################
+
 #devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 
