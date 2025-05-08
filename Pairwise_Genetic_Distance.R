@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -7,7 +8,11 @@ library(hierfstat)
 library(broom)
 library(poppr)
 
-# Read in 2205 genetic data
+####################################################################################
+#### Estimate pairwise genetic distance (Nei's GST) for each of the populations ####
+####################################################################################
+
+# Read in 2205 project data (with 30 random domestic strain fish from 2111 project)
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
@@ -37,8 +42,7 @@ Samples_2205 <- Samples_2205 %>%
 # Fill the pop slots
 Data_2205@pop <- as_factor(Samples_2205$WaterbodyName)
 
-###
-
+# Run the analysis
 gstMatrix <- pairwise_Gst_Nei(Data_2205)
 
 gst_tidy <- gstMatrix %>% 
@@ -48,7 +52,12 @@ mean_distances <- gst_tidy %>%
   group_by(item1) %>% 
   summarize(average_dist = round(mean(distance), digits = 3))
 
+# Write the results as CSV
 gst_tidy %>% write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/Gst_Fst/pwise_dist_2205.csv")
+
+############################################################################################
+#### Produce a heatmap to display pairwise genetic distance values for every population ####
+############################################################################################
 
 heatmap <- gst_tidy %>% 
   mutate(distance = round(distance, digits = 2)) %>% 
@@ -89,29 +98,3 @@ ggsave(filename = "GST_heatmap.png",
        height = 8,
        width = 10,
        units = "in")
-
-
-#### Exact G test ####
-
-
-# genepop package
-test_diff("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_genepop.txt", 
-          genic = FALSE,
-          pairs = FALSE,
-          outputFile = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Gst_Fst/Genepop_exact_test.txt")
-
-
-#### Experimenting with other packages ####
-# adegenet package
-genpop_list <- as.genpop(Data_2205$tab)
-dist.genpop(genpop_list)
-nei.dist(Data_2205)
-
-# hierfstat package
-hierfstat_2205 <- genind2hierfstat(Data_2205)
-genet.dist(hierfstat_2205)
-pairwise.neifst(hierfstat_2205)
-pairwise.WCfst(hierfstat_2205)
-
-allele_freqs <- pop.freq(hierfstat_2205)
-pp.fst(allele_freqs) # Couldn't get this to work
