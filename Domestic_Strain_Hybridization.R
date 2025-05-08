@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -8,13 +9,16 @@ library(broom)
 library(poppr)
 library(radiator)
 
-#### Read in data ####
+#################################################################################################################################################################
+#### Hybridize the different cohorts of domestic strain fish from project 2111 to create a population of prototypical "St. Croix Falls domestic" brook trout ####
+#################################################################################################################################################################
+
 # Read in 2111 genetic data
 Data_2111 <- read.genepop("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/2111_genepop.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
-# Read in 2111 metadata
+# Read in 2111 project metadata
 set.seed(27)
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(SampleID %in% rownames(Data_2111@tab)) %>% 
@@ -24,14 +28,14 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
 
 Samples_2111 %>% count(Group)
   
-# Subset by random grouping
+# Subset into two groups randomly
 Data_2111@pop <- as_factor(Samples_2111$Group)
 
 Group_1 <- popsub(Data_2111, "1")
 
 Group_2 <- popsub(Data_2111, "2")
 
-#### Hybridize domestic fish to create the prototypical "St. Croix Falls domestic" brook trout population ####
+#### Hybridize the two groups of fish and write results as genepop file ####
 hybridize(Group_1, Group_2,
           n = 100,
           pop = "St.Croix_HD",
@@ -41,8 +45,7 @@ hybridize(Group_1, Group_2,
   write_genepop(genepop.header = "St.Croix hybridized domestic fish (n = 100)",
                 filename = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD")
 
-# Will have to manually fill pop slot when reading in the genepop file as shown below:
-
+# May have to manually fill pop slot when reading in the genepop file as shown below:
 St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
