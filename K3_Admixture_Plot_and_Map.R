@@ -15,7 +15,7 @@ library(mapmixture)
 #### Produce admixture barplots and maps to visualize the K = 3 assignment probabilities from STRUCTURE output ####
 ###################################################################################################################
 
-### To use Evanno method clear environment and restart session before running Pophelper ####
+#### To use Evanno method clear environment and restart session before running Pophelper ####
 #library(pophelper)
 #library(pophelperShiny)
 #runPophelper()
