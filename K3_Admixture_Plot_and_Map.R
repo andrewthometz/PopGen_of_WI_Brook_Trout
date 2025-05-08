@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(patchwork)
 library(sf)
@@ -5,6 +6,10 @@ library(RColorBrewer)
 #library(ggrepel)
 #library(ggspatial)
 library(ggh4x)
+
+###################################################################################################################
+#### Produce admixture barplots and maps to visualize the K = 3 assignment probabilities from STRUCTURE output ####
+###################################################################################################################
 
 ### For Evanno method ###
 # Clear environment and restart session before running Pophelper
@@ -30,9 +35,11 @@ Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samp
   select(SampleID, WaterbodyName, HUC_8, HUC_2, Latitude, Longitude) %>% 
   bind_rows(Samples_2111)
 
-#########################################################
+########################################################
 #### Plot most supported number of clusters (K = 3) ####
-# K = 3 STRUCTURE run
+########################################################
+
+# Read in K = 3 STRUCTURE assignment probabilities
 K3 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
   select(-1) %>% 
   mutate(C3 = as.numeric(C3)) %>% 
@@ -45,7 +52,7 @@ K3 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Struc
          Cluster = fct_relevel(Cluster, c("1 (St. Croix Falls Strain)", "2", "3")),
          HUC_8 = fct_relevel(HUC_8, "Hatchery", after = Inf))
 
-# Plot  
+# Plot Upper Mississippi Region HUC 2 (Western WI)
 K3_1 <- K3 %>% 
   filter(HUC_2 == "Upper Mississippi Region") %>% 
   ggplot(aes(x = SampleID, y = Probability, fill = Cluster)) +
@@ -71,6 +78,7 @@ K3_1 <- K3 %>%
         strip.text.x = element_text(angle = -90,
                                     hjust = 0))
 
+# Plot Great Lakes Region HUC 2 (Eastern WI)
 K3_2 <- K3 %>% 
   filter(HUC_2 == "Great Lakes Region" |
          HUC_2 == "Hatchery") %>% 
@@ -100,6 +108,8 @@ K3_2 <- K3 %>%
         legend.direction = "horizontal") +
   guides(fill = guide_legend(nrow = 1))
 
+# Consolidate the barplots and save
+
 K3_plots <- K3_1 / K3_2
 
 ggsave(filename = "K3_str_plot.pdf",
@@ -118,8 +128,10 @@ ggsave(filename = "K3_str_plot.png",
        width = 14,
        units = "in")
 
-############################
-#### Plot them on a map ####
+####################################################
+#### Map the assignment probabilities spatially ####
+####################################################
+
 # Read in necessary shape files
 HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
@@ -127,7 +139,7 @@ HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Ba
 
 WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
-# Prep admixture df and lat long df for mapmixture function
+#### Prep admixture dataframe and lat/long dataframe for mapmixture function ####
 K3_mapmixture <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
   select(-1) %>% 
   left_join(Samples_2205) %>% 
@@ -135,7 +147,7 @@ K3_mapmixture <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Ana
   mutate(C3 = as.numeric(C3)) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain")
 
-# These are intentionally incorrect, revised for ease of viewing
+# Manually tweak the lat/long coordiantes to prevent overlapping on the map (purely for ease of view)
 Lats_Longs <- Samples_2205 %>% 
   select(WaterbodyName, Latitude, Longitude) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain") %>% 
