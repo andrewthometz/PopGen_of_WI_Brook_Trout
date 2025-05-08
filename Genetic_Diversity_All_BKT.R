@@ -1,11 +1,17 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
+library(hierfstat)
 library(poppr)
 library(radiator)
 library(sf)
 library(ggspatial)
 library(ggOceanMaps)
+
+#############################################################################################################
+#### Estimate measures of genetic diversity for all brook trout (2205 project, 2111 project, and Erdman) ####
+#############################################################################################################
 
 #### Read in Master brook trout genepop file ####
 UNIFIED_BKT <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/UNIFIED_BKT_genepop.gen",
@@ -23,7 +29,7 @@ nAll(UNIFIED_BKT) %>%
             min_alleles = min(n_alleles))
 
 #### Read in metadata ####
-# 2111 metadata
+# 2111 project metadata
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls domestic",
@@ -33,14 +39,14 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
          .keep = "unused") %>% 
   select(SampleID, WaterbodyName, HUC_8, HUC_4, HUC_2)
 
-# 2205 metadata
+# 2205 project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   #filter(SampleID %in% rownames(UNIFIED_BKT@tab)) %>% 
   #arrange(match(SampleID, rownames(UNIFIED_BKT@tab))) %>% 
   mutate(Data_source = "Thometz")
 
-# Erdman
+# Erdman's data
 Erdman_samples <- read_excel("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>%
   mutate(Data_source = "Erdman")
 
@@ -48,7 +54,7 @@ Erdman_samples %>%
   filter(WaterbodyName %in% Samples_2205$WaterbodyName) %>% 
   count(WaterbodyName)
 
-# Bind the metadata
+# Bind the metadata together
 All_metadata <- Samples_2205 %>% 
   bind_rows(Erdman_samples) %>% 
   select(SampleID, WBIC, WaterbodyName, HUC_4, HUC_8, Data_source, Latitude, Longitude) %>% 
@@ -58,8 +64,9 @@ All_metadata <- Samples_2205 %>%
 # Assign pop slot
 UNIFIED_BKT@pop <- as_factor(All_metadata$WaterbodyName)
 
+##############################################
 #### Calculate genetic diversity measures ####
-library(hierfstat)
+##############################################
 
 gd <- basic.stats(UNIFIED_BKT)
 
@@ -113,8 +120,10 @@ GD_tibble <- bind_cols(H_expected$pop,
 
 #write.csv(GD_tibble, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Analyses/Genetic_diversity/GD_Unified_BKT.csv")
 
-#### Map it ####
-# Read in necessary shape files
+#############################################
+#### Map the genetic diversity estimates ####
+#############################################
+
 # Read in necessary shape files
 HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
@@ -127,8 +136,7 @@ HUC4_clipped <- clip_shapefile(HUC4_shp,
                                limits = HUC2_shp,
                                return.boundary = FALSE) # Select TRUE to retain metadata, must subset later with $
 
-
-# Grab lats longs and convert to stat sf or whatever
+# Grab lats longs and convert to stat sf
 Map_df <- All_metadata %>% 
   select(WaterbodyName, Latitude, Longitude) %>% 
   drop_na(Latitude, Longitude) %>% 
@@ -138,7 +146,7 @@ Map_df <- All_metadata %>%
   right_join(GD_tibble) #%>% 
   #filter(geometry != "POINT EMPTY")
 
-# Plot map
+# Produce map
 Ar_map <- HUC4_clipped %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -185,7 +193,9 @@ ggsave(filename = "Ar_map_unified_BKT.png",
        width = 5,
        units = "in")
 
-#### Model lat vs Ar ####
+################################################################################################
+#### Create model to determine if relationship exists between latitude and allelic richness ####
+################################################################################################
 
 model_df <- GD_tibble %>% 
   left_join(All_metadata) %>% 
