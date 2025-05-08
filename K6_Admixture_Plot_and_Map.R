@@ -7,6 +7,10 @@ library(ggh4x)
 #library(ggrepel)
 #library(ggspatial)
 
+###################################################################################################################
+#### Produce admixture barplots and maps to visualize the K = 6 assignment probabilities from STRUCTURE output ####
+###################################################################################################################
+
 ### For Evanno method ###
 # Clear environment and restart session before running Pophelper
 #library(pophelper)
