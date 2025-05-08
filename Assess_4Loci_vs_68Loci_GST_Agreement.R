@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -7,7 +8,10 @@ library(hierfstat)
 library(broom)
 library(poppr)
 
-# Run GST at just 4 loci to see if they match results from 68 loci
+##############################################################################################
+#### Estimate Nei's GST using just 4 loci and see if they align with results from 68 loci ####
+##############################################################################################
+
 #### Read in data ####
 # Read in 2205 genetic data at just 4 loci of interest
 Data_2205_4loci <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/2205_63pops_4loci.gen", 
