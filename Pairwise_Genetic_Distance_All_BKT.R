@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -6,6 +7,10 @@ library(mmod)
 library(hierfstat)
 library(broom)
 library(poppr)
+
+#####################################################################################################################################################################
+#### Estimate pairwise genetic distance (Nei's GST) for all brook trout data at 4 loci (2205 project fish + 30 random 2111 domestic strain fish + Erdman's data) ####
+#####################################################################################################################################################################
 
 #### Read in Master brook trout genepop file ####
 UNIFIED_BKT <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/UNIFIED_BKT_genepop.gen",
@@ -51,14 +56,16 @@ All_metadata <- All_metadata %>%
 # Assign pop slot
 UNIFIED_BKT@pop <- as_factor(All_metadata$WaterbodyName)
 
-#### Run pairwise Gst Nei ####
+#### Run analysis to calculate pairwise genetic distance (Nei's GST) ####
 gstMatrix <- pairwise_Gst_Nei(UNIFIED_BKT)
 
 gst_tidy <- gstMatrix %>% 
   tidy()
 
+# Write results as CSV
 gst_tidy %>% write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Analyses/Gst_Fst/Gst_4loci_UNIFIED.csv")
 
+# Produce heatmap to visualize results
 heatmap <- gst_tidy %>% 
   mutate(distance = round(distance, digits = 2)) %>% 
   ggplot(aes(x = item1, y = item2, fill = distance)) +
