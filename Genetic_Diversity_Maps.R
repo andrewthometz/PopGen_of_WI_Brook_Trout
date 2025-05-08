@@ -1,8 +1,8 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
 
-#### Mapping ####
 library(sf)
 library(ggrepel)
 library(ggspatial)
@@ -12,12 +12,16 @@ library(patchwork)
 
 library(ggmap)
 
-#### Grab lats longs from Samples_2205 ####
+#########################################################################################
+#### Produce a multi-panel figure to spatially map each measure of genetic diversity ####
+#########################################################################################
+
+#### Grab lats/long coordinates from 2205 project metadata ####
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   select(WaterbodyName, HUC_8, HUC_4, HUC_12, Latitude, Longitude, WBIC) %>% 
   distinct()
 
-# Read in master gd file
+# Read in master genetic diversity file for 2205 project
 GD_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
   left_join(Samples_2205)
 
@@ -41,8 +45,7 @@ GD_map_2205 <- GD_2205 %>%
          He = round(He, digits = 2),
          Fis = round(Fis, digits = 2))
 
-##############
-# Standard map
+#### Produce a standard map that simply shows population locations (black dots) ####
 Standard_map <- WMU_shp %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -85,9 +88,11 @@ ggsave(filename = "Standard_sites_map.png",
        width = 5,
        units = "in")
 
-###################
-# Four-panel GD map
-# Allelic richness
+#########################################################
+#### Produce four-panel genetic diversity map/figure ####
+#########################################################
+
+#### Allelic richness ####
 Ar_map <- HUC2_shp %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -117,7 +122,7 @@ Ar_map <- HUC2_shp %>%
   theme_classic() +
   theme(axis.text.x = element_blank())
 
-# Inbreeding coefficient (Fis) (0 = low inbreeding, 1 = high inbreeding)
+#### Inbreeding coefficient (Fis) (0 = low inbreeding, 1 = high inbreeding) ####
 Fis_map <- HUC2_shp %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -147,7 +152,7 @@ Fis_map <- HUC2_shp %>%
   theme_classic() +
   theme(axis.text = element_blank())
 
-# Observed hetereozygosity
+#### Observed hetereozygosity ####
 Ho_map <- HUC2_shp %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -177,7 +182,7 @@ Ho_map <- HUC2_shp %>%
   theme_classic() +
   theme(legend.key.size = unit(0.75, "cm"))
 
-# Expected hetereozygosity
+#### Expected hetereozygosity ####
 He_map <- HUC2_shp %>% 
   ggplot() +
   geom_sf(fill = NA,
@@ -207,6 +212,7 @@ He_map <- HUC2_shp %>%
   theme_classic() +
   theme(axis.text.y = element_blank())
 
+#### Consolidate the maps into one four-panel figure ####
 GD_maps <- (Ar_map + Fis_map) / (Ho_map + He_map)
 
 ggsave(filename = "GD_maps_4panel.pdf",
@@ -225,11 +231,17 @@ ggsave(filename = "GD_maps_4panel.png",
        width = 8,
        units = "in")
 
-########
-# Ne map (middle value is median not mean)
+#######################################################################################
+#### Produce a map to spatially depict estimates of effective population size (Ne) ####
+#######################################################################################
+
+# (middle Ne value is median, not mean)
+
+# Read in 2205 project metadata
 samples_temp <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   select(SampleID, WBIC)
 
+# Read in Ne estimates
 Ne_estimates <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") %>% 
   select(SampleID, Ne) %>% 
   left_join(samples_temp) %>% 
@@ -238,7 +250,7 @@ Ne_estimates <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Anal
                                  .default = as.character(Ne)),
          .keep = "unused")
   
-
+# Add the Ne estimates to GD_map_2205
 Ne_df <- GD_map_2205 %>% 
   left_join(Ne_estimates) %>% 
   filter(Ne_estimate != "Inf") %>%
@@ -248,6 +260,7 @@ Ne_df <- GD_map_2205 %>%
                                  .default = Ne_estimate),
          Ne_estimate = round(Ne_estimate, 0))
 
+# Produce the map
 Ne_map <- HUC4_clipped %>% 
   ggplot() +
   geom_sf(fill = NA,
