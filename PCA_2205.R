@@ -1,10 +1,14 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(poppr)
 library(adegenet)
 library(ggrepel)
 
-#### Read in data ####
+#######################################################################################################
+#### Run principle component analyses to visualize genetic variation among fish and groups of fish ####
+#######################################################################################################
+
 # Read in 2205 genetic data
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_genepop.gen", 
                           ncode = 3L, 
@@ -15,12 +19,12 @@ Data_2111 <- read.genepop("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/2111_g
                           ncode = 3L, 
                           quiet = FALSE)
 
-# Read in project metadata
+# Read in 2205 project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
-# Read in 2111 metadata
+# Read in 2111 project metadata
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(SampleID %in% rownames(Data_2111@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2111@tab))) %>% 
@@ -54,7 +58,7 @@ pca_df <- pca_result$li %>%
          HUC_6 = Samples_2205$HUC_6,
          HUC_8 = Samples_2205$HUC_8)
 
-# HUC 2
+# Color by HUC 2
 centroids_HUC2 <- pca_df %>% 
   select(HUC_2) %>% 
   right_join(aggregate(cbind(Axis1, Axis2) ~ HUC_2, pca_df, mean)) %>% 
@@ -78,7 +82,7 @@ pca_df %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# HUC 2 axis 2 and 3
+# Color by HUC 2 for axis 2 and adxis 3
 centroids_HUC2_23 <- pca_df %>% 
   select(HUC_2) %>% 
   right_join(aggregate(cbind(Axis2, Axis3) ~ HUC_2, pca_df, mean)) %>% 
@@ -102,7 +106,7 @@ pca_df %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# HUC 4
+# Color by HUC 4
 centroids_HUC4 <- pca_df %>% 
   select(HUC_4) %>% 
   right_join(aggregate(cbind(Axis1, Axis2) ~ HUC_4, pca_df, mean)) %>% 
@@ -126,7 +130,7 @@ pca_df %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# HUC 6
+# Color by HUC 6
 centroids_HUC6 <- pca_df %>% 
   select(HUC_6) %>% 
   right_join(aggregate(cbind(Axis1, Axis2) ~ HUC_6, pca_df, mean)) %>% 
@@ -150,7 +154,7 @@ pca_df %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# HUC 8
+# Color by HUC 8
 centroids_HUC8 <- pca_df %>% 
   select(HUC_8) %>% 
   right_join(aggregate(cbind(Axis1, Axis2) ~ HUC_8, pca_df, mean)) %>% 
@@ -174,7 +178,11 @@ pca_df %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-#### PCA of populations with no stocking record ####
+#### Produce a PCA of populations with no recorded stocking events ####
+
+#########
+######### This needs to be revised to account for populations that have adjacent waterbodies stocked
+#########
 
 # Filter to find HUC12s with no bkt stocking history (17 pops)
 # Read in WDNR stocking database #
@@ -208,7 +216,7 @@ pca_df_2 <- pca_unstocked_result$li %>%
          HUC_6 = never_stocked$HUC_6,
          HUC_8 = never_stocked$HUC_8)
 
-# HUC 2
+# Color by HUC 2
 centroids_HUC2 <- pca_df_2 %>% 
   select(HUC_2) %>% 
   right_join(aggregate(cbind(Axis1, Axis2) ~ HUC_2, pca_df_2, mean)) %>% 
