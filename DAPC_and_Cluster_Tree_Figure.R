@@ -10,9 +10,9 @@ library(BiocManager)
 #BiocManager::install("YuLab-SMU/treedataverse")
 library(treedataverse)
 
-################################################################################
-#### Run DAPC and create a figure of a cluster tree from DAPC and STRUCTURE ####
-################################################################################
+#################################################################################
+#### Run DAPC and create a figure of a cluster trees from DAPC and STRUCTURE ####
+#################################################################################
 
 #### Import and prepare the data for analysis ####
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
@@ -146,6 +146,7 @@ tree_DAPC <- ggtree(Tree_data,
   labs(title = "(A)   DAPC clusters (K = 7)")
 
 #### Bring in STRUCTURE data and build trees ####
+#### K = 6 STRUCTURE run ####
 # Prep 2111 data to work with plotting
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
@@ -166,7 +167,6 @@ Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samp
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
-# K = 6 STRUCTURE run
 K6 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K6_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C6 = as.numeric(C6)) %>% 
@@ -239,7 +239,7 @@ tree_K6 <- ggtree(Tree_data,
   xlim(0, 0.2) + # This can help make tree fit
   labs(title = "(B)   STRUCTURE clusters (K = 6)")
 
-################################## k = 9 #############
+#### K = 9 STRUCTURE run ####
 # Prep 2111 data to work with plotting
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
@@ -336,7 +336,7 @@ tree_K9 <- ggtree(Tree_data,
   xlim(0, 0.2) + # This can help make tree fit
   labs(title = "(C)   STRUCTURE clusters (K = 9)")
 
-################################# Join them together and save #########################
+#### Consolidate the trees into a single plot and save ####
 
 combined_tree <- tree_DAPC / tree_K6 / tree_K9
 
