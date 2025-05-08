@@ -1,10 +1,13 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
 library(poppr)
 library(radiator)
 
-# Run genetic diversity at just 4 loci to see if they match results from 68 loci
+######################################################################################################
+#### Estimate genetic diversity using just 4 loci and see if they align with results from 68 loci ####
+######################################################################################################
 
 #### Read in data ####
 # Read in 2205 genetic data at just 4 loci of interest
@@ -31,7 +34,7 @@ Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samp
 # Fill the pop slots
 Data_2205_4loci@pop <- as_factor(Samples_2205$WaterbodyName)
 
-#### Calculate genetic diversity measures ####
+#### Calculate genetic diversity measures for 4 loci ####
 library(hierfstat)
 
 gd <- basic.stats(Data_2205_4loci)
@@ -84,7 +87,7 @@ GD_4loci <- bind_cols(H_expected$pop,
          "He_4loci" = 4,
          "Fis_4loci" = 5)
 
-# Read in gd data from 68 loci
+#### Read in genetic diversity data from 68 loci ####
 GD_68loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
   #select(-c(1, WBIC, Ne)) %>% 
   rename(Ar_68loci = Ar,
@@ -96,7 +99,7 @@ GD_68loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyse
 GD_comparison <- GD_4loci %>% 
   left_join(GD_68loci)
 
-# Plot Ar
+# Plot allelic richness
 lm_Ar <- lm(Ar_4loci ~ Ar_68loci, data = GD_comparison)
 
 summary(lm_Ar)
@@ -129,7 +132,7 @@ Ar_plot <- GD_comparison %>%
   theme_classic() +
   theme(plot.margin = margin(10, 10, 10, 10))
 
-# Plot Ho
+# Plot observed heterozygosity
 lm_Ho <- lm(Ho_4loci ~ Ho_68loci, data = GD_comparison)
 
 summary(lm_Ho)
@@ -162,7 +165,7 @@ Ho_plot <- GD_comparison %>%
   theme_classic() +
   theme(plot.margin = margin(10, 10, 10, 10))
 
-# Plot He
+# Plot expected heterozygosity
 lm_He <- lm(He_4loci ~ He_68loci, data = GD_comparison)
 
 summary(lm_He)
@@ -195,7 +198,7 @@ He_plot <- GD_comparison %>%
   theme_classic() +
   theme(plot.margin = margin(10, 10, 10, 10))
 
-# Plot Fis (Did not use Fis for final)
+# Plot inbreeding coefficient (Did not use Fis for final)
 lm_Fis <- lm(Fis_4loci ~ Fis_68loci, data = GD_comparison)
 
 summary(lm_Fis)
@@ -237,7 +240,7 @@ gst_comparison <- gst_4loci %>%
   mutate(dist_4loci = round(dist_4loci, 3),
          dist_68loci = round(dist_68loci, 3))
 
-# Run linear regression to compare
+#### Run linear regression to assess agreement between 4 loci and 68 loci ####
 lm_dist = lm(dist_4loci ~ dist_68loci, data = gst_comparison)
 
 summary(lm_dist)
