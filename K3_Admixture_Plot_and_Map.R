@@ -7,21 +7,20 @@ library(RColorBrewer)
 #library(ggspatial)
 library(ggh4x)
 
-###################################################################################################################
-#### Produce admixture barplots and maps to visualize the K = 3 assignment probabilities from STRUCTURE output ####
-###################################################################################################################
-
-### For Evanno method ###
-# Clear environment and restart session before running Pophelper
-#library(pophelper)
-#library(pophelperShiny)
-#runPophelper()
-
 #devtools::install_github("Tom-Jenkins/mapmixture")
 library(mapmixture)
 #launch_mapmixture()
 
-# Prep 2111 data to work with plotting
+###################################################################################################################
+#### Produce admixture barplots and maps to visualize the K = 3 assignment probabilities from STRUCTURE output ####
+###################################################################################################################
+
+### To use Evanno method clear environment and restart session before running Pophelper ####
+#library(pophelper)
+#library(pophelperShiny)
+#runPophelper()
+
+#### Prep 2111 data to work with plotting ####
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
