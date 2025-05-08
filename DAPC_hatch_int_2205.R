@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -5,13 +6,17 @@ library(poppr)
 library(ggh4x)
 library(patchwork)
 
+###############################################################
+#### Run DAPC to evaluate levels of hatchery introgression ####
+###############################################################
+
 # DAPC tests a hypothesis, PCA does not
 
 # DAPC guidelines from Thia 2022:
 # n.da = k groups (should be determined a priori, # of sample pops)
 # n.pca must be =< k-1 (only k-1 PCs are biologically informative)
 
-#### Read in data ####
+#### Read and prep the data ####
 # Read in 2205 genetic data
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
                           ncode = 3L, 
@@ -54,6 +59,8 @@ Wild_fish <- popsub(All_fish, exclude = c("Hybrid_native", "St.Croix_HD"), drop 
 
 #####################################################################################
 #### Run DAPC using supplementary individuals to quantify hatchery introgression ####
+#####################################################################################
+
 clusters_hybrids <- find.clusters.genind(Hybrid_fish, 
                                          #max.n.clust = 5,
                                          n.pca = 300,
@@ -91,8 +98,10 @@ Assignment_probs <- round(prediction$posterior, 2) %>%
   mutate(Cluster = case_when(Cluster == "Hatchery" ~ "St. Croix Falls Strain",
                              .default = Cluster))
 
-#############################################################
+#####################################
 #### Quantify St.Croix influence ####
+#####################################
+
 # Overall mean St.Croix influence (Mean assignment probability to hatchery group)
 Assignment_probs %>% 
   filter(Cluster == "St. Croix Falls Strain") %>% 
@@ -122,7 +131,11 @@ Samples_2205 %>%
   left_join(Ave_hatchery_ID) %>% 
   write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Hatchery_introgression/Hatchery_ID_2205.csv")
 
-# Plot all assignment probabilities
+###################################################################
+#### Depict all assignment probabilities as admixture bar plot ####
+###################################################################
+
+# Upper Mississippi Region HUC 2
 HI_plot_1 <- Assignment_probs %>% 
   filter(HUC_2 == "Upper Mississippi Region") %>% 
   mutate(Cluster = fct_relevel(Cluster, c("Native", "St. Croix Falls Strain"))) %>%
@@ -148,6 +161,7 @@ HI_plot_1 <- Assignment_probs %>%
         strip.text.x = element_text(angle = -90,
                                     hjust = 0))
 
+# Great Lakes Region HUC 2
 HI_plot_2 <- Assignment_probs %>% 
   filter(HUC_2 == "Great Lakes Region" #|
          #HUC_2 == "Hatchery"
@@ -179,6 +193,7 @@ HI_plot_2 <- Assignment_probs %>%
         legend.direction = "horizontal") +
   guides(fill = guide_legend(nrow = 1))
 
+# Consolidate the plots and save
 HI_plots <- HI_plot_1 / HI_plot_2
   
 ggsave(filename = "Hatch_int_str_plot.pdf",
@@ -197,12 +212,11 @@ ggsave(filename = "Hatch_int_str_plot.png",
        width = 14,
        units = "in")
 
-##################
-#### Plotting ####
+##########################################
+#### Try depicting using density plot ####
+##########################################
 
-# scatter(DAPC_hybrids)
-
-# Create density plot for original DAPC model (like scatter(DAPC_hybrids))
+# Create density plot for original DAPC model (similar to scatter(DAPC_hybrids))
 LD1_coords <- DAPC_hybrids$ind.coord %>% 
   data.frame() %>% 
   rownames_to_column(var = "ID") %>% 
@@ -260,7 +274,9 @@ ggsave(filename = "density_hybrids_2panel.png",
        width = 10,
        units = "in")
 
-#### Plot them on a map ####
+####################################################
+#### Plot the assignment probabilities on a map ####
+####################################################
 
 # Read in necessary shape files
 HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
@@ -343,66 +359,3 @@ ggsave(filename = "HI_map.png",
        height = 5,
        width = 6,
        units = "in")
-
-##################################
-# Plot for presentation
-Melanc_willow_df <- Assignment_probs %>% 
-  filter(WaterbodyName == "Willow Creek" |
-         WaterbodyName == "Melancthon Creek")
-
-Melanc_willow <- Melanc_willow_df %>% 
-  ggplot(aes(SampleID, Probability, fill = factor(Cluster))) +
-  geom_col(color = "gray", linewidth = 0.1) +
-  facet_grid(~HUC_8 + WaterbodyName, 
-             switch = "x", 
-             scales = "free", 
-             space = "free") +
-  labs(x = "Waterbody", y = "Admixture proportion") +
-  scale_y_continuous(expand = c(0, 0)) +
-  scale_x_discrete(expand = expansion(add = 1)) +
-  scale_fill_manual(values = c("#D81B60", "#1E88E5")) +
-  theme_minimal(base_size = 15) + 
-  theme(panel.spacing.x = unit(0.01, "lines"),
-        axis.text.x = element_blank(),
-        strip.text.x = element_text(angle = -90),
-        panel.grid = element_blank()) + 
-  guides(fill = guide_legend(title = "Ancestry")) 
-
-Melanc_willow <- Melanc_willow_df %>% 
-  mutate(Cluster = fct_relevel(Cluster, c("Native", "Hatchery"))) %>%
-  ggplot(aes(x = SampleID, y = Probability, fill = Cluster)) +
-  geom_col(show.legend = TRUE) + 
-  facet_nested(cols = vars(#HUC_8, 
-                           WaterbodyName),
-               switch = "x",
-               nest_line = element_line(linewidth = 1, lineend = "round"),
-               solo_line = TRUE,
-               resect = unit(0.05, "in"),
-               scales = "free", 
-               space = "free") +
-  labs(x = "", 
-       y = "Assignment\nprobability",
-       #title = "Great Lakes Region (HUC 2)",
-       fill = "Simulated reference group") +
-  scale_y_continuous(expand = c(0, 0),
-                     position = "left",
-                     breaks = seq(0, 1, by = 0.5)) +
-  scale_fill_manual(values = c("#1E88E5", "#D81B60")) +
-  theme_minimal() + 
-  theme(panel.spacing = unit(0.1, "line"),
-        axis.text.x = element_blank(),
-        #strip.text.x = element_blank(),
-        #strip.text.x = element_text(angle = -90,
-        #                            hjust = 0),
-        legend.position = "right",
-        legend.direction = "vertical") +
-  guides(fill = guide_legend(nrow = 1))
-
-ggsave(filename = "Melanc_willow.png",
-       plot = Melanc_willow,
-       device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
-       height = 2,
-       width = 6,
-       units = "in")
-
