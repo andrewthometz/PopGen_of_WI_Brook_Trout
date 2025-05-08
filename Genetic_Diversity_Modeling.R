@@ -1,37 +1,41 @@
-#### Modeling ####
+# Load packages
 library(car)
 library(ggsignif)
 library(tidyverse)
 library(readxl)
 library(adegenet)
 
-# Read in master gd file
-GD_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
-  select(-1) #%>% 
-  #filter(Study == "Thometz",
-  #       WaterbodyName != "St.Croix domestic")
+library (broom)
 
-# Ho
+##################################################################################################
+#### Create models to assess relationships between latitude and measures of genetic diversity ####
+##################################################################################################
+
+# Read in genetic diversity file for 2205 project
+GD_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
+  select(-1)
+
+# Observed heterozygosity (Ho)
 Ho_mod_lat <- lm(Ho ~ Latitude, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ho_mod_lat)
 summary(Ho_mod_lat)
 
-# He
+# Expected heterozygosity (He)
 He_mod_lat <- lm(He ~ Latitude, data = GD_2205)
 par(mfrow = c(2,2))
 plot(He_mod_lat)
 summary(He_mod_lat)
 
-# Ar
+# Allelic richness (Ar)
 Ar_mod_lat <- lm(Ar ~ Latitude, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_lat)
 summary(Ar_mod_lat)
 
-library(broom)
 tidy(Ar_mod_lat)
 
+# Plot the relationship between allelic richness and latitude
 Ar_lat_plot <- GD_2205 %>% 
   ggplot(aes(x = Latitude, y = Ar)) + 
   geom_smooth(method = "glm") +
@@ -66,21 +70,25 @@ ggsave(filename = "Ar_latitude_regression.png",
        width = 5,
        units = "in")
 
-# Try the same for Ne now
+#### Model the relationship between effective population size (Ne) and latitude ####
+# Read in 2205 metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   select(SampleID, WaterbodyName, Latitude)
 
+# Read in effective population size (Ne) data
 Ne_tidy <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") %>% 
   select(SampleID, Ne) %>% 
   left_join(Samples_2205) %>% 
   select(-SampleID) %>% 
   filter(Ne > 0)
 
+# Run the model to assess relationship between Ne and latitude
 Ne_mod_lat <- lm(Ne ~ Latitude, data = Ne_tidy)
 par(mfrow = c(2,2))
 plot(Ne_mod_lat)
 summary(Ne_mod_lat)
 
+# Plot the relationship between Ne and latitude
 Ne_lat_plot <- Ne_tidy %>% 
   filter(Ne < 1000) %>% 
   ggplot(aes(x = Latitude, y = Ne)) + 
@@ -116,9 +124,11 @@ ggsave(filename = "Ne_latitude_regression.png",
        width = 5,
        units = "in")
 
+#######################################################################
+#### Run other models to see if any additional relationships exist ####
+#######################################################################
 
-########################## Not using this stuff #####################################################################
-# HUC 2
+#### Is there a relationship between Ar and HUC 2? ####
 Ar_mod_HUC2 <- glm(Ar ~ HUC_2, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_HUC2)
@@ -132,7 +142,7 @@ GD_2205 %>%
   geom_signif(comparisons = list(c("Great Lakes Region", "Upper Mississippi Region")), map_signif_level = TRUE) +
   theme_classic()
 
-# HUC 4
+#### Is there a relationship between Ar and HUC 4? ####
 Ar_mod_HUC4 <- glm(Ar ~ HUC_4, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_HUC4)
@@ -145,7 +155,7 @@ GD_2205 %>%
   ylab("Allelic richness") +
   theme_classic()
 
-# HUC 6
+#### Is there a relationship between Ar and HUC 6? ####
 Ar_mod_HUC6 <- glm(Ar ~ HUC_6, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_HUC6)
@@ -158,7 +168,7 @@ GD_2205 %>%
   ylab("Allelic richness") +
   theme_classic()
 
-# HUC 8
+#### Is there a relationship between Ar and HUC 8? ####
 Ar_mod_HUC8 <- glm(Ar ~ HUC_8, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_HUC8)
@@ -171,10 +181,9 @@ GD_2205 %>%
   ylab("Allelic richness") +
   theme_classic()
 
-#### Stocking variables ####
+#### Is there a relationship between Ar and total number of fish stocked? ####
 library(betareg)
 
-# Total number of fish stocked
 Ar_mod_nstocked <- glm(Ar ~ Total_n_stocked, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_nstocked)
@@ -187,7 +196,8 @@ GD_2205 %>%
   xlab("Total number of fish stocked") +
   ylab("Allelic richness") +
   theme_classic()
-#
+
+#### Is there a relationship between Fis and total number of fish stocked? ####
 Fis_mod_nstocked <- glm(Fis ~ Total_n_stocked, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Fis_mod_nstocked)
@@ -200,7 +210,8 @@ GD_2205 %>%
   xlab("Total number of fish stocked") +
   ylab("Inbreeding coefficient") +
   theme_classic()
-#
+
+#### Is there a relationship between Ho and total number of fish stocked? ####
 Ho_mod_nstocked <- betareg(Ho ~ Total_n_stocked, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ho_mod_nstocked)
@@ -214,7 +225,7 @@ GD_2205 %>%
   ylab("Observed heterozygosity") +
   theme_classic()
 
-# Number of stocking events
+#### Is there a relationship between Ar and number of recorded stocking events? ####
 Ar_mod_stockevents <- glm(Ar ~ n_stocking_events, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_stockevents)
@@ -227,7 +238,8 @@ GD_2205 %>%
   xlab("Number of stocking events") +
   ylab("Allelic richness") +
   theme_classic()
-#
+
+#### Is there a relationship between Fis and number of recorded stocking events? ####
 Fis_mod_stockevents <- glm(Fis ~ n_stocking_events, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Fis_mod_stockevents)
@@ -240,7 +252,8 @@ GD_2205 %>%
   xlab("Number of stocking events") +
   ylab("Inbreeding coefficient") +
   theme_classic()
-#
+
+#### Is there a relationship between Ho and number of recorded stocking events? ####
 Ho_mod_stockevents <- betareg(Ho ~ n_stocking_events, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ho_mod_stockevents)
@@ -254,7 +267,7 @@ GD_2205 %>%
   ylab("Observed heterozygosity") +
   theme_classic()
 
-# Number of years since mean of stocking event years
+#### Is there a relationship between Ar and number years since stocking? ####
 Ar_mod_year <- glm(Ar ~ Years_since_stocking, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ar_mod_year)
@@ -267,7 +280,8 @@ GD_2205 %>%
   xlab("Years since mean stocking year") +
   ylab("Allelic richness") +
   theme_classic()
-#
+
+#### Is there a relationship between Fis and number years since stocking? ####
 Fis_mod_year <- glm(Fis ~ Years_since_stocking, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Fis_mod_year)
@@ -280,7 +294,8 @@ GD_2205 %>%
   xlab("Years since mean stocking year") +
   ylab("Inbreeding coefficient") +
   theme_classic()
-#
+
+#### Is there a relationship between Ho and number years since stocking? ####
 Ho_mod_year <- betareg(Ho ~ Years_since_stocking, data = GD_2205)
 par(mfrow = c(2,2))
 plot(Ho_mod_year)
