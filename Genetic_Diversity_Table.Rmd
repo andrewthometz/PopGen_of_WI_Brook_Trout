@@ -1,3 +1,7 @@
+#########################################################################################
+#### Produce a clean table to display measures of genetic diversity using R markdown ####
+#########################################################################################
+
 ---
 output:
   
@@ -7,6 +11,7 @@ output:
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 
+# Load packages
 library(rstatix)
 library(broom)
 library(ggsignif)
@@ -32,7 +37,7 @@ Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_
                           ncode = 3L, 
                           quiet = FALSE)
 
-# Read in project metadata
+# Read in 2205 project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
@@ -56,7 +61,7 @@ nAll(Data_2205) %>%
   as_tibble() %>% 
   rename("n_alleles" = ".")
 
-#### Calculate genetic diversity measures ####
+#### Estimate genetic diversity measures ####
 library(hierfstat)
 
 gd <- basic.stats(Data_2205)
@@ -109,17 +114,18 @@ GD_tibble <- bind_cols(H_expected$pop,
          "He" = 4,
          "Fis" = 5)
 
-# Bring in Hatch int data
+#### Bring in hatchery introgression data ####
 hatch_int <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Hatchery_introgression/Hatchery_ID_2205.csv") %>% 
   select(WaterbodyName, Ave_hatchery_ID) %>% 
   mutate(Ave_hatchery_ID = round(Ave_hatchery_ID*100, 2))
 
-# Bring in Ne data and join stuff
+#### Bring in effective population size (Ne) data ####
 Ne_output <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") 
 
 samples_temp <- Samples_2205 %>% 
   select(SampleID, Latitude, Longitude, WaterbodyName, HUC_8)
 
+#### Join everything into one final table ####
 final_table <- Ne_output %>% 
   select(SampleID, Sample_size, Ne, Low_jk, High_jk) %>% 
   left_join(samples_temp) %>% 
@@ -132,6 +138,7 @@ final_table <- Ne_output %>%
   left_join(hatch_int) %>% 
   arrange(HUC_8, WaterbodyName)
 
+# Write as CSV
 write.csv(final_table, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv",
           row.names = FALSE)
 
@@ -139,6 +146,7 @@ write.csv(final_table, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses
 
 ```{r message=FALSE, warning=FALSE, echo=FALSE}
 
+#### Produce and customize final table ####
 final_table %>% 
   rename(Waterbody = WaterbodyName, 
          HUC8_Subbasin = HUC_8) %>% 
@@ -149,21 +157,5 @@ final_table %>%
   #set_flextable_defaults(font.size = 11) #%>% 
   #align("left")
   #font(part = 'all', fontname = 'Calibri')
-
-```
-
-```{r message=FALSE, warning=FALSE, echo=FALSE}
-
-# Great Lakes vs Upper Mississippi allelic richness test
-
-Upper_mis <- GD_tibble %>% 
-  left_join(Samples_2205) %>% 
-  filter(HUC_2 == "Upper Mississippi Region")
-
-Great_lakes <- GD_tibble %>% 
-  left_join(Samples_2205) %>% 
-  filter(HUC_2 == "Great Lakes Region")
-
-t.test(Great_lakes$Ar, Upper_mis$Ar)
 
 ```
