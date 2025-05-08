@@ -9,6 +9,10 @@ library(sf)
 library(ggrepel)
 library(ggspatial)
 
+################################################################################
+#### Run Discriminant Analysis of Principle Components and plot the results ####
+################################################################################
+
 # DAPC tests a hypothesis, PCA does not
 
 # DAPC guidelines from Thia 2022:
