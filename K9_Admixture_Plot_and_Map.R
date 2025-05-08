@@ -6,17 +6,20 @@ library(sf)
 library(RColorBrewer)
 library(ggh4x)
 
-### For Evanno method ###
-# Clear environment and restart session before running Pophelper
-#library(pophelper)
-#library(pophelperShiny)
-#runPophelper()
-
 #devtools::install_github("Tom-Jenkins/mapmixture")
 library(mapmixture)
 #launch_mapmixture()
 
-# Prep 2111 data to work with plotting
+###################################################################################################################
+#### Produce admixture barplots and maps to visualize the K = 9 assignment probabilities from STRUCTURE output ####
+###################################################################################################################
+
+#### To use Evanno method clear environment and restart session before running Pophelper ####
+#library(pophelper)
+#library(pophelperShiny)
+#runPophelper()
+
+#### Prep 2111 data to work with plotting ####
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
@@ -30,9 +33,11 @@ Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samp
   select(SampleID, WaterbodyName, HUC_8, HUC_2, Latitude, Longitude) %>% 
   bind_rows(Samples_2111)
 
-#########################################################
-#### Plot most supported number of clusters (K = 9) ####
-# K = 9 STRUCTURE run
+###############################################################################################
+#### Produce admixture barplots to display assignment probabilities from STRUCTURE (K = 9) ####
+###############################################################################################
+
+# K = 9 STRUCTURE output
 K9 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K9_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C9 = as.numeric(C9)) %>% 
@@ -59,7 +64,7 @@ K9_longer <- K9 %>%
 brewer.pal(n = 9, name = "Set1")
 K9_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "yellow3", "#A65628", "#F781BF", "#999999")
 
-# Plot
+# Plot Upper Mississippi Region HUC 2 (Western WI)
 K9_1 <- K9_longer %>% 
   filter(HUC_2 == "Upper Mississippi Region") %>% 
   ggplot(aes(x = SampleID, y = Probability, fill = Cluster)) +
@@ -84,6 +89,7 @@ K9_1 <- K9_longer %>%
         strip.text.x = element_text(angle = -90,
                                     hjust = 0))
 
+# Plot Great Lakes Region HUC 2 (Eastern WI)
 K9_2 <- K9_longer %>% 
   filter(HUC_2 == "Great Lakes Region" |
          HUC_2 == "Hatchery") %>% 
@@ -113,6 +119,7 @@ K9_2 <- K9_longer %>%
         legend.direction = "horizontal") +
   guides(fill = guide_legend(nrow = 1))
 
+# Consolidate the admixture plots and save
 K9_plots <- K9_1 / K9_2
 
 ggsave(filename = "K9_str_plot.pdf",
@@ -131,8 +138,9 @@ ggsave(filename = "K9_str_plot.png",
        width = 14,
        units = "in")
 
-############################
-#### Plot them on a map ####
+####################################################################
+#### Map the assignment probabilites to view clusters spatially ####
+####################################################################
 
 # Read in necessary shape files
 HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
@@ -141,13 +149,13 @@ HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Ba
 
 WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
-# Prep admixture df and lat long df for mapmixture function
+# Prep admixture dataframe and lat/long dataframe for mapmixture function
 K9_mapmixture <- K9 %>% 
   left_join(Samples_2205) %>% 
   select(WaterbodyName, SampleID, K1, K2, K3, K4, K5, K6, K7, K8, K9) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain")
 
-# These are intentionally incorrect, revised for ease of viewing
+# Manually tweak the lat/long coordinates to prevent overlap on the map (purely for ease of viewing)
 Lats_Longs <- Samples_2205 %>% 
   select(WaterbodyName, Latitude, Longitude) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain") %>% 
