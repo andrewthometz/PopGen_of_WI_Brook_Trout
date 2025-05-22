@@ -15,7 +15,7 @@ Data_2205_4loci <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts
                                 ncode = 3L, 
                                 quiet = FALSE)
 
-# 2111 metadata
+# Read in 2111 project metadata
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
@@ -25,7 +25,7 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
          .keep = "unused") %>% 
   select(SampleID, WaterbodyName, HUC_8, HUC_4, HUC_2)
 
-# 2205 metadata
+# Read in 2205 project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205_4loci@tab)) %>% 
