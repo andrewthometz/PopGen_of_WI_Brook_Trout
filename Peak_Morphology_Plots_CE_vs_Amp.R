@@ -1,27 +1,11 @@
 library(tidyverse)
 library(ggforce)
 
-#### Replicate of the PeakMorph_2111 script but for samples where CE and Amp calls are in disagreement ####
+#########################################################################################################################################################
+#### Replicate of the "Peak_Morphology_Plots" script but for samples where capillary electrophoresis and amplicon genotype calls are in disagreement ####
+#########################################################################################################################################################
 
-### Function to make length_dist files tidy ###
-
-length_dist_tidy <- function(x){
-  
-  BKT_ID <- deparse(substitute(x))
-  
-  output <- x %>% 
-    mutate(uSat_locus = str_replace_all(Microsatellite, "-", "_"), .keep = "unused") %>% 
-    select(-sum) %>%
-    pivot_longer(-c(uSat_locus, scores), names_to = "Length", values_to = "Read_count") %>% 
-    add_column(SampleID = BKT_ID) %>% 
-    mutate(SampleID = str_remove_all(SampleID, "BKT_")) %>% 
-    mutate(Length = as.numeric(Length))
-  
-  print(output)
-}
-
-### Read in 12 BKT ### These are the 12 fish with the greatest number of CE vs Amp disagreements
-
+#### Read in 12 BKT #### (These are the 12 fish with the greatest number of CE vs amplicon disagreements)
 BKT_17_03053 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03053.txt")
 BKT_17_03009 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03009.txt")
 BKT_17_03011 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03011.txt")
@@ -38,8 +22,23 @@ BKT_17_03057 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSa
 BKT_17_03012 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03012.txt")
 BKT_17_03054 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03054.txt")
 
-### Run each fish's length_dist file through my tidying function while joining them ###
+#### Create a function to make the above length_dist files tidy ####
+length_dist_tidy <- function(x){
+  
+  BKT_ID <- deparse(substitute(x))
+  
+  output <- x %>% 
+    mutate(uSat_locus = str_replace_all(Microsatellite, "-", "_"), .keep = "unused") %>% 
+    select(-sum) %>%
+    pivot_longer(-c(uSat_locus, scores), names_to = "Length", values_to = "Read_count") %>% 
+    add_column(SampleID = BKT_ID) %>% 
+    mutate(SampleID = str_remove_all(SampleID, "BKT_")) %>% 
+    mutate(Length = as.numeric(Length))
+  
+  print(output)
+}
 
+#### Run each fish's length_dist file through the tidying function while joining them ####
 All_LD_data <- bind_rows(length_dist_tidy(BKT_17_03053),
                          length_dist_tidy(BKT_17_03009),
                          length_dist_tidy(BKT_17_03011),
@@ -73,8 +72,8 @@ All_LD_data %>%
   ungroup() %>% 
   summarize(x = n_distinct(uSat_locus))
 
-### Make peak morphology plots, one locus and 12 BKT per page ### Saves directly as pdf
-
+#### Create a loop to produce peak morphology plots, one locus and 12 BKT per page #### (Saves directly as PDF)
+# Beware long run time (~40 minutes?)
 pdf("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/PeakMorph_CE_vs_Amp.pdf", paper = "a4r", width = 11, height = 9)
 
 ProgressBar <- txtProgressBar(min = 0, max = 9, style = 3)
@@ -107,8 +106,7 @@ print(All_LD_data %>%
 close(ProgressBar)
 dev.off()
 
-### Single page of peak morphs for testing plot changes ###
-
+#### Use this single page of peak morphologies for testing plot changes ####
 All_LD_data %>% 
   #filter(Read_count > 0) %>% 
   group_by(uSat_locus, SampleID) %>% 
