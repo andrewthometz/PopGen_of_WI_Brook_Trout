@@ -41,7 +41,7 @@ domestics <- popsub(Data_2111, "St. Croix Falls domestic")
 
 Joined_2205_2111 <- repool(Data_2205, domestics)
 
-#### Run a PCA that just shows centroid (see mcglPCA function code) and color centroids by huc level ####
+#### Run a PCA that just shows centroid (see mcglPCA function code) and color centroids by HUC level ####
 pca_data <- tab(Data_2205, freq = TRUE, NA.method = "mean")
 
 pca_result <- dudi.pca(pca_data, center = TRUE, scale = FALSE, nf = 4, scannf = FALSE)
@@ -82,7 +82,7 @@ pca_df %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# Color by HUC 2 for axis 2 and adxis 3
+# Color by HUC 2 for axis 2 and axis 3
 centroids_HUC2_23 <- pca_df %>% 
   select(HUC_2) %>% 
   right_join(aggregate(cbind(Axis2, Axis3) ~ HUC_2, pca_df, mean)) %>% 
@@ -180,12 +180,10 @@ pca_df %>%
 
 #### Produce a PCA of populations with no recorded stocking events ####
 
-#########
-######### This needs to be revised to account for populations that have adjacent waterbodies stocked
-#########
+# Filter to find HUC12s with no bkt stocking history (17 pops) 
+# This may need to be revised to account for populations that have had adjacent waterbodies stocked
 
-# Filter to find HUC12s with no bkt stocking history (17 pops)
-# Read in WDNR stocking database #
+# Read in WDNR stocking database
 Stocking_data <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Stocking_histories_2205.csv")
 
 never_stocked <- Samples_2205 %>% 
@@ -197,9 +195,9 @@ unstocked_list <- never_stocked %>%
 
 Unstocked_genind <- popsub(Data_2205, sublist = unstocked_list$WaterbodyName)
 
-####### This plot will go in my publication, needs to be cleaned up #######
-####### Justifies pooling the native pops together when hybridizing #######
-# Run PCA
+# This plot will go in my publication, needs to be cleaned up
+# This plot ustifies pooling the native pops together when hybridizing
+# Run the PCA
 pca_unstocked <- tab(Unstocked_genind, freq = TRUE, NA.method = "mean")
 
 pca_unstocked_result <- dudi.pca(pca_unstocked, center = TRUE, scale = FALSE, nf = 4, scannf = FALSE)
@@ -240,7 +238,7 @@ pca_df_2 %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# Population level
+# Plot at population level
 centroids_pop <- pca_df_2 %>% 
   select(Population) %>% 
   right_join(aggregate(cbind(Axis1, Axis2) ~ Population, pca_df_2, mean)) %>% 
@@ -264,7 +262,7 @@ pca_df_2 %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-# Population level including St.Croix hybrids
+# Plot at population level including St.Croix domestic strain hybrids
 St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
@@ -278,7 +276,7 @@ Joined_genind <- repool(Unstocked_genind, St.Croix_HD)
 fish_df <- never_stocked %>% 
   bind_rows(temp)
 
-# Run pca again with pooled data
+# Run the PCA again with pooled data
 pca_unstocked <- tab(Joined_genind, freq = TRUE, NA.method = "mean")
 
 pca_unstocked_result <- dudi.pca(pca_unstocked, center = TRUE, scale = FALSE, nf = 4, scannf = FALSE)
@@ -318,7 +316,7 @@ pca_df_2 %>%
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
 
-#### PCA comparing each hybrid group #### 
+#### Run PCA comparing the two synthetic hybrid groups #### 
 St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
@@ -335,7 +333,7 @@ Hybrid_natives@pop <- as_factor(temp$Hybrid_type)
 
 Hybrids_only <- repool(Hybrid_natives, St.Croix_HD)
 
-# Run pca again with pooled hybrid data
+# Run the PCA again with pooled hybrid data
 pca_hybrids <- tab(Hybrids_only, freq = TRUE, NA.method = "mean")
 
 pca_hybrids_result <- dudi.pca(Hybrids_only, center = TRUE, scale = FALSE, nf = 4, scannf = FALSE)
@@ -370,7 +368,5 @@ pca_df_hybrids %>%
   xlab("Axis 1") + 
   theme_classic(base_size = 18) + 
   theme(legend.position = "none")
-
-#####
 
 
