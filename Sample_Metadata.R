@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(sf)
@@ -10,6 +11,10 @@ library(sp)
 
 install_version("MazamaSpatialUtils", version = "0.7.6", repos = "http://cran.us.r-project.org")
 library(MazamaSpatialUtils)
+
+######################################################################################
+#### Produce an organized spreadsheet with valuable metadata for the 2205 project ####
+######################################################################################
 
 #### Reading in MCGL Data ####
 MCGL2 <- read_excel("Z:/MCGL Database/Working/MCGL Sample Database (11-00001 to 17-15647).xlsx", 
@@ -59,7 +64,7 @@ HUC12_WBICs <- read_delim("X:/2205_BKT_feral_broodstock_ID/Statewide BKT info/HU
   select(WBIC, HUC_12, HUC12_CODE) %>% 
   distinct()
 
-# Make final df with huc data
+# Make final dataframe with HUC data
 Samples_2205 <- temporary %>% 
   mutate(HUC_2 = getHUCName(longitude = temporary$Longitude, latitude = temporary$Latitude, dataset = huc2Dat),
          HUC_4 = getHUCName(longitude = temporary$Longitude, latitude = temporary$Latitude, dataset = huc4Dat),
@@ -90,7 +95,7 @@ Samples_2205 <- temporary %>%
 
 write_csv(Samples_2205, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv")
 
-#### Create reusable stocking data csv ####
+#### Create reusable stocking data CSV ####
 Stocking_data <- read_excel("X:/2205_BKT_feral_broodstock_ID/Statewide BKT info/WI_BKT_Stocking&CPUE.xlsx", 
                             sheet = "Stocking data") %>% 
   select(WBIC, WaterbodyName, Stocking_Year, n_stocked, Strain, Stock_Source_Group) %>% 
@@ -100,7 +105,7 @@ Stocking_data <- read_excel("X:/2205_BKT_feral_broodstock_ID/Statewide BKT info/
 
 write_csv(Stocking_data, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Stocking_histories_2205.csv")
 
-#### Create reusable CPE data csv ####
+#### Create reusable CPE data CSV ####
 CPE_data <- read_excel("X:/2205_BKT_feral_broodstock_ID/Statewide BKT info/WI_BKT_Stocking&CPUE.xlsx", 
                        sheet = ">200mile") %>% 
   select(WBIC, Survey_Year, Hours, N_Fish, CPE_Hour) %>% 
