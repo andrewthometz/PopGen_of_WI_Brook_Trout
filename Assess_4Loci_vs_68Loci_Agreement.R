@@ -5,9 +5,9 @@ library(adegenet)
 library(poppr)
 library(radiator)
 
-######################################################################################################
-#### Estimate genetic diversity using just 4 loci and see if they align with results from 68 loci ####
-######################################################################################################
+#############################################################################################################
+#### Estimate genetic diversity using just 4 legacy loci and see if they align with results from 68 loci ####
+#############################################################################################################
 
 #### Read in data ####
 # Read in 2205 genetic data at just 4 loci of interest
