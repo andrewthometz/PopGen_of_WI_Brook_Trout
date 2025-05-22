@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -5,11 +6,15 @@ library(poppr)
 library(ggh4x)
 library(patchwork)
 
-# Read in 2205 sample data
+###########################################################################################
+#### Produce admixture barplots to show assignment probabilities from STRUCTURE ouptut ####
+###########################################################################################
+
+# Read in 2205 project sample data
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   select(WaterbodyName, SampleID, WBIC, HUC_2, HUC_4, HUC_6, HUC_8)
 
-# K = 2 STRUCTURE run
+# Read in K=2 STRUCTURE output
 K2 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/STRUCTURE/Reruns/K=2/K2_Results/K2_Results.txt") %>% 
   select(-n) %>% 
   mutate(C2 = as.numeric(C2)) %>% 
@@ -79,7 +84,7 @@ ggsave(filename = "Initial_K2_str_plot.pdf",
        width = 20,
        units = "in")
 
-# K = 11 STRUCTURE run
+# Read in K=11 STRUCTURE run
 K11 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/STRUCTURE/Reruns/K=11/K11_Results/K11_Results.txt") %>% 
   select(-1) %>% 
   mutate(C11 = as.numeric(C11)) %>% 
