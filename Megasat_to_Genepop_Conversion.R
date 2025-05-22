@@ -1,11 +1,17 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(miscTools)
 
-#### Read in 2205 metadata ####
+#############################################################
+#### Convert ouput files from megasat into genepop files ####
+#############################################################
+
+#### Prepare the data and loci ####
+# Read in 2205 metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") 
 
-#### Final locus selections ####
+# Final locus selections
 Locus_data <- read_excel("X:/2111_F1F2D_BKT/BKT_Locus_Evaluation.xlsx") %>% 
   select(1:9)
 
@@ -20,7 +26,7 @@ Final_loci <- Locus_data %>%
          Locus != "Salv_1_Di_30_1186") %>% 
   select(Locus)
 
-#### Read in genotypes, merge with sample data, organize by population, remove negative controls ####
+# Read in genotypes, merge with sample data, organize by population, remove negative controls
 genotype_2205 <- read_excel("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/Genotype_2205.xlsx",
                            col_types = "text") %>% 
   rename(SampleID = Sample_idx1_idx2)
@@ -37,7 +43,7 @@ colnames(genotype_data_1) <- genotype_data_1 %>%
 genotype_data_1 <- genotype_data_1 %>% 
   select(SampleID, matches(Final_loci$Locus))
 
-#### Correct names for each locus ####
+# Correct the names for each locus
 locus_names <- colnames(genotype_data_1) %>%
   as_tibble() %>%
   #mutate(Locus = str_replace_all(value, c("\\." = "_", "-" = "_")), .keep = "unused") %>% 
@@ -45,7 +51,7 @@ locus_names <- colnames(genotype_data_1) %>%
   rename("Locus" = value) %>% 
   filter(!str_detect(Locus, "_b"))
 
-#### Change MegaSat notation to be missing genepop calls (000) ####
+# Change Megasat notation to be missing genepop calls (000) 
 genotype_data_2 <- genotype_data_1 %>%
   select(-SampleID) %>%
   mutate(across(everything(), ~replace(., . ==  0, "000")),
@@ -53,13 +59,12 @@ genotype_data_2 <- genotype_data_1 %>%
          across(everything(), ~replace(., . ==  "Unscored" , "000")),
          across(everything(), ~str_pad(., 3, pad = "0")))
 
-#### Unite the alleles for each locus ####
+# Run a loop to unite the alleles for each locus
 united_alleles <- genotype_data_1 %>% 
   select(SampleID) %>%   
   mutate(SampleID = paste(genotype_data_1$SampleID, ","))
 
-# 135 because 68 final selected loci
-odds <- seq(1, 135, by = 2)
+odds <- seq(1, 135, by = 2)  # 135 because 68 final selected loci
 
 for(i in odds){
   z <- i + 1 
@@ -70,28 +75,27 @@ for(i in odds){
 
 united_alleles
 
-################### Construct the Genepop file ################################
-
+#### Construct the Genepop file ####
 genotype_matrix <- as.matrix(united_alleles)
 
-#### Make Genepop header ####
+# Make genepop header
 file_date <- format(Sys.time(), "%Y%m%d@%H%M") # date and time
 header <- paste("Genepop file format", "MCGL2205", file_date)
 
-#### List of locus names separated by commas ####
+# List of locus names separated by commas
 locus_names_2 <- paste(locus_names$Locus, collapse = ",")
 
-#### Generate appropriate "Pop" rows ####
+# Generate appropriate "Pop" rows
 # Pop label that will separate each population
 pop_line <- c("Pop", rep("", ncol(genotype_matrix)-1))
 
-#### Count the number of individuals in each population ####
+# Count the number of individuals in each population
 pop_counts <- data.frame(Counts = count(Samples_2205, WaterbodyName))
 
-#### Add a column totalling the cumulative sum ####
+# Add a column totalling the cumulative sum
 pop_counts <- pop_counts %>% mutate(Sum = cumsum(pop_counts$Counts.n))
 
-#### Insert a Pop row between each population ####
+# Insert a Pop row between each population
 for (i in 1:nrow(pop_counts)){
   # i is the row number and increases by 1 after each iteration to compensate
   # for the extra row being inserted each run through the loop
