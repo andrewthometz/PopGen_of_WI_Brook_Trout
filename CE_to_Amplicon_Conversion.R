@@ -4,9 +4,9 @@ library(tidyverse)
 library(adegenet)
 library(poppr)
 
-###############################################################################################################################
-#### Identify conversion factors to reliably convert capillary electrophoresis genotype calls into amplicon genotype calls ####
-###############################################################################################################################
+##############################################################################################################################
+#### Identify conversion values to reliably convert capillary electrophoresis genotype calls into amplicon genotype calls ####
+##############################################################################################################################
 
 #### Read in locus data and tidy ####
 # Read in final locus selections
