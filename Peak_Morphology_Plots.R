@@ -1,25 +1,12 @@
+# Load packages
 library(tidyverse)
 library(ggforce)
 
-### Function to make length_dist files tidy ###
+#####################################################################################
+#### Create peak morphology plots to help determine which loci are "trustworthy" ####
+#####################################################################################
 
-length_dist_tidy <- function(x){
-  
-  BKT_ID <- deparse(substitute(x))
-  
-  output <- x %>% 
-    mutate(uSat_locus = str_replace_all(Microsatellite, "-", "_"), .keep = "unused") %>% 
-    select(-sum) %>%
-    pivot_longer(-c(uSat_locus, scores), names_to = "Length", values_to = "Read_count") %>% 
-    add_column(SampleID = BKT_ID) %>% 
-    mutate(SampleID = str_remove_all(SampleID, "BKT_")) %>% 
-    mutate(Length = as.numeric(Length))
-  
-  print(output)
-}
-
-### Read in 12 BKT ### Grabbed largest few files from each cat folder. Used some from each folder to get "even" representation
-
+#### Read in 12 BKT #### (I grabbed largest few files from each cat folder. I used some from each folder to get even representation)
 BKT_18_06622 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_18-06622.txt")
 BKT_18_06180 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_18-06180.txt")
 BKT_15_03167 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_15-03167.txt")
@@ -37,8 +24,23 @@ BKT_22_12710 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs
 BKT_22_13858 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_5of5_Msat_output/length_distribution/Genotype_22-13858.txt")
 BKT_22_15856 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_5of5_Msat_output/length_distribution/Genotype_22-15856.txt")
 
-### Run each fish's length_dist file through my tidying function while joining them ###
+#### Create a function to make the above length_dist files tidy ####
+length_dist_tidy <- function(x){
+  
+  BKT_ID <- deparse(substitute(x))
+  
+  output <- x %>% 
+    mutate(uSat_locus = str_replace_all(Microsatellite, "-", "_"), .keep = "unused") %>% 
+    select(-sum) %>%
+    pivot_longer(-c(uSat_locus, scores), names_to = "Length", values_to = "Read_count") %>% 
+    add_column(SampleID = BKT_ID) %>% 
+    mutate(SampleID = str_remove_all(SampleID, "BKT_")) %>% 
+    mutate(Length = as.numeric(Length))
+  
+  print(output)
+}
 
+#### Run each fish's length_dist file through my tidying function while joining them ####
 All_LD_data <- bind_rows(length_dist_tidy(BKT_18_06622),
                          length_dist_tidy(BKT_18_06180),
                          length_dist_tidy(BKT_15_03167),
@@ -60,10 +62,8 @@ All_LD_data %>%
   ungroup() %>% 
   summarize(x = n_distinct(uSat_locus))
 
-### Make peak morphology plots, one locus and 12 BKT per page ### Saves directly as pdf
-
-# Beware, this takes about 40min to run #
-
+#### Create a loop to produce many pages of peak morphology plots, 1 locus and 12 fish per page #### (Saves directly as pdf)
+# Beware, this takes about 40min to run
 pdf("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_PeakMorph_Thometz.pdf", paper = "a4r", width = 11, height = 9)
 
 ProgressBar <- txtProgressBar(min = 0, max = 91, style = 3)
@@ -96,8 +96,7 @@ print(All_LD_data %>%
 close(ProgressBar)
 dev.off()
 
-### Single page of peak morphs for testing plot changes ###
-
+#### Use thie single page of peak morphologies to test changes in the plot (so you don't have to wait 40 min to test things) ####
 All_LD_data %>% 
   #filter(Read_count > 0) %>% 
   group_by(uSat_locus, SampleID) %>% 
@@ -117,7 +116,7 @@ All_LD_data %>%
                       page = 49, 
                       scales = "free")
 
-#### Produce plot of peak morphs for 9 loci, 1 fish #### (For suppelemental figures)
+#### Produce a plot of peak morphologies for 9 loci, 1 fish #### (For suppelemental figures)
 loci_list <- All_LD_data %>% 
   distinct(uSat_locus)
 
