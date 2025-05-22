@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(readxl)
 library(adegenet)
@@ -8,19 +9,22 @@ library(BiocManager)
 #BiocManager::install("YuLab-SMU/treedataverse")
 library(treedataverse)
 
-#### Build trees! ####
-# Read in 2205 genetic data
+##############################################################################
+#### Build trees to identify genetic relatedness among survey populations ####
+##############################################################################
+
+# Read in 2205 project genetic data
 Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
-# Prep 2111 data to work with plotting
+# Prep 2111 project data to work with plotting
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain") %>% 
   select(SampleID, WaterbodyName)
 
-# Read in project metadata
+# Read in 2205 project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
@@ -29,30 +33,30 @@ Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samp
 # Fill the pop slots
 Data_2205@pop <- as_factor(Samples_2205$WaterbodyName)
 
-# Build initial tree (creates phylo object)
+# Build initial tree (this creates a phylo object)
 Phylo_tree <- aboot(Data_2205,
                     strata = Data_2205@pop,
                     distance = "nei.dist",
                     tree = "nj",
                     cutoff = 50) # Do "nj" instead of default "upgma" to make dendrogram
 
-# Get HUC info to color code leaf tips
+# Get HUC info to color-code leaf tips
 temp_metadata <- Samples_2205 %>% 
   rename(label = WaterbodyName) %>% 
   select(-SampleID) %>% 
   distinct()
 
-# Turn phylo object into tibble to add huc data
+# Turn phylo object into a tibble to add HUC data
 tree_tibble <- Phylo_tree %>% 
   as_tibble() %>% 
   left_join(temp_metadata) %>% 
   mutate(#Cluster = case_when(label %in% Samples_revised$Cluster ~ label, .default = NA),
          Bootstraps = case_when(!(label %in% Samples_2205$WaterbodyName) ~ label, .default = NA))
 
-# Convert tibble into treedata object for ggtree plotting
+# Convert the tibble into a treedata object for ggtree plotting
 Tree_data <- as.treedata(tree_tibble)
 
-# Plot treedata object using ggtree (dendrogram)
+# Plot the treedata object using ggtree (as a dendrogram)
 brewer.pal(n = 8, name = "Set1")
 
 my_colors <- c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "yellow3", "#A65628", "#F781BF")
@@ -74,7 +78,7 @@ tree_1 <- ggtree(Tree_data,
             vjust = -0.5,
             size = 3,
             show.legend = FALSE) +
-  geom_strip(taxa1 = "Venison Creek", 
+  geom_strip(taxa1 = "Venison Creek", # Use geom_strip to depict groupings in the tree
              taxa2 = "Noisy Creek",
              label = "A",
              align = FALSE,
