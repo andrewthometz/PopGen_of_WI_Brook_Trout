@@ -1,12 +1,14 @@
+# Load packages
 library(readxl)
 library(tidyverse)
 library(adegenet)
 library(poppr)
 
-####################################################################
-#### Create conversion factor for CE and Amplicon genotype data ####
-####################################################################
+###############################################################################################################################
+#### Identify conversion factors to reliably convert capillary electrophoresis genotype calls into amplicon genotype calls ####
+###############################################################################################################################
 
+#### Read in locus data and tidy ####
 # Read in final locus selections
 Locus_data <- read_excel("X:/2111_F1F2D_BKT/BKT_Locus_Evaluation.xlsx") %>% 
   select(1:9)
@@ -138,7 +140,7 @@ ggsave(filename = "Allele_diffs_prop.pdf",
        width = 14,
        units = "in")  
 
-#### Isolate some samples to run through peak morph script ####
+#### Isolate some samples to run through a peak morphorphology script ####
 fish_errors <- CE_vs_Amp %>% 
   mutate(error = case_when(Locus == "L_SFOC113" & Difference != 79 ~ "yes",
                            Locus == "L_SFOC113" & Difference == 79 ~ "no",
@@ -162,11 +164,12 @@ fish_errors <- CE_vs_Amp %>%
   group_by(Locus) %>% 
   count(Locus) %>% 
   rename(n_locus_errors = n) %>% 
-  arrange(desc(n_locus_errors)) # Sending these top 12 fish through my peak morph script
+  arrange(desc(n_locus_errors)) # Sending these top 12 fish through my peak morphology script
 
-#write_csv(fish_errors, file = "X:/2111_F1F2D_BKT/Fish_w_loc_diffs.csv")
+# Write this as a CSV
+write_csv(fish_errors, file = "X:/2111_F1F2D_BKT/Fish_w_loc_diffs.csv")
 
-#### Conversion error plots ####
+#### Create conversion error plots and print onto PDF ####
 pop_data <- read_excel("X:/2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
   select(Location, SampleID) %>% 
   rename(WaterbodyName = Location)
