@@ -1,3 +1,4 @@
+# Load packages
 library(tidyverse)
 library(patchwork)
 library(sf)
@@ -6,7 +7,11 @@ library(RColorBrewer)
 #devtools::install_github("Tom-Jenkins/mapmixture")
 library(mapmixture)
 
-# Prep 2111 data to work with plotting
+########################################################################################
+#### Produce admixture maps using the assingment probability results from STRUCTURE ####
+########################################################################################
+
+# Prep 2111 proejct data to work with plotting
 Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
@@ -15,19 +20,18 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
          .keep = "unused") %>% 
   select(SampleID, WaterbodyName, HUC_8, HUC_2)
 
-# Read in 2205 metadata data
+# Read in 2205 project metadata
 Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
   select(SampleID, WaterbodyName, HUC_8, HUC_2, Latitude, Longitude) %>% 
   bind_rows(Samples_2111)
 
-############################
-#### Plot them on a map ####
+#### Plot the survey locations on a map ####
 # Read in necessary shape files
 HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
 WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
-# Prep admixture df and lat long df for mapmixture function
+# Prep admixture dataframe and latitude/longitude dataframe for mapmixture function at K=3 configuration
 K3_mapmixture <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
   select(-1) %>% 
   left_join(Samples_2205) %>% 
@@ -35,7 +39,7 @@ K3_mapmixture <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Ana
   mutate(C3 = as.numeric(C3)) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain")
 
-# These are intentionally incorrect, revised for ease of viewing
+# These are intentionally incorrect, revised to prevent overlap on map
 Lats_Longs <- Samples_2205 %>% 
   select(WaterbodyName, Latitude, Longitude) %>% 
   filter(WaterbodyName != "St. Croix Falls Strain") %>% 
@@ -93,7 +97,7 @@ K3_map <- mapmixture(admixture_df = K3_mapmixture,
           #      legend.position = "bottom",
           #      axis.title.x = element_blank())
 
-# K = 6
+#### Read in K=6 STRUCTURE output ####
 K6 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K6_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C6 = as.numeric(C6)) %>% 
@@ -150,7 +154,7 @@ K6_map <- mapmixture(admixture_df = K6_mapmixture,
   #      axis.text.y = element_blank(),
   #      axis.title.y = element_blank())
 
-# K = 9
+#### Read in K=9 STRUCTURE output ####
 K9 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K9_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C9 = as.numeric(C9)) %>% 
@@ -206,7 +210,7 @@ K9_map <- mapmixture(admixture_df = K9_mapmixture,
         #axis.text.y = element_blank(),
         #axis.title = element_blank())
 
-# Join the 3 maps together
+#### Join the K=3, K=6, and K=9 maps together into a clean figure and save ####
 STRUCTURE_maps <- K3_map + K6_map + K9_map + guide_area() + plot_layout(guides = "collect")
 
 ggsave(filename = "STRUCTURE_maps_3panel.pdf",
