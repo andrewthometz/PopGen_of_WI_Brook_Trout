@@ -18,18 +18,18 @@ library(ggmap)
 #########################################################################################
 
 # Grab lats/long coordinates from Samples_2205
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   select(WaterbodyName, HUC_4, HUC_8, HUC_12, Latitude, Longitude, WBIC) %>% 
   distinct()
 
 # Read in necessary shape files
-HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
+HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
 #WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
-DriftlessArea <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/FHP_DARE_Boundary_2013.shp/FHP_DARE_Boundary_2013.shp")
+DriftlessArea <- read_sf("X:/filepath.../Mapping_shapefiles/FHP_DARE_Boundary_2013.shp/FHP_DARE_Boundary_2013.shp")
 
 # Clip the Driftless Area shapefile to only show within Wisconsin
 DA_clipped <- clip_shapefile(DriftlessArea,
@@ -37,7 +37,7 @@ DA_clipped <- clip_shapefile(DriftlessArea,
                              return.boundary = FALSE)
 
 # Read in HUC 4 shapefile and clip to only show within Wisconsin
-HUC4_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/NHD_H_Wisconsin_State_Shape/Shape/WBDHU4.shp") %>% 
+HUC4_shp <- read_sf("X:/filepath.../Mapping_shapefiles/NHD_H_Wisconsin_State_Shape/Shape/WBDHU4.shp") %>% 
   filter(name %in% Samples_2205$HUC_4)
 
 HUC4_clipped <- clip_shapefile(HUC4_shp,
@@ -113,7 +113,7 @@ HUC_DA_map <- HUC4_clipped$shapefile %>%
 ggsave(filename = "HUCs_Driftless_map.pdf",
        plot = HUC_DA_map,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 5,
        width = 5,
        units = "in")
@@ -121,7 +121,7 @@ ggsave(filename = "HUCs_Driftless_map.pdf",
 ggsave(filename = "HUCs_Driftless_map.png",
        plot = HUC_DA_map,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 5,
        width = 5,
        units = "in")
