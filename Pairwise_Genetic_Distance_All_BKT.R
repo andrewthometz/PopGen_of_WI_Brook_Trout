@@ -13,13 +13,13 @@ library(poppr)
 #####################################################################################################################################################################
 
 #### Read in Master brook trout genepop file ####
-UNIFIED_BKT <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/UNIFIED_BKT_genepop.gen",
+UNIFIED_BKT <- read.genepop("X:/filepath.../Erdman_integration/UNIFIED_BKT_genepop.gen",
                             ncode = 3L,
                             quiet = FALSE)
 
 #### Read in metadata ####
 # 2111 metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls domestic",
          HUC_2 = "Hatchery",
@@ -29,14 +29,14 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName, HUC_8, HUC_4, HUC_2)
 
 # 2205 metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   #filter(SampleID %in% rownames(UNIFIED_BKT@tab)) %>% 
   #arrange(match(SampleID, rownames(UNIFIED_BKT@tab))) %>% 
   mutate(Data_source = "Thometz")
 
 # Erdman
-Erdman_samples <- read_excel("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>%
+Erdman_samples <- read_excel("X:/filepath.../Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>%
   mutate(Data_source = "Erdman")
 
 # Bind the metadata
@@ -63,7 +63,7 @@ gst_tidy <- gstMatrix %>%
   tidy()
 
 # Write results as CSV
-gst_tidy %>% write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Analyses/Gst_Fst/Gst_4loci_UNIFIED.csv")
+gst_tidy %>% write_csv("X:/filepath.../Erdman_integration/Analyses/Gst_Fst/Gst_4loci_UNIFIED.csv")
 
 # Produce heatmap to visualize results
 heatmap <- gst_tidy %>% 
@@ -93,7 +93,7 @@ heatmap <- gst_tidy %>%
 ggsave(filename = "GST_heatmap_4loci_UNIFIED.pdf",
        plot = heatmap,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 12,
        width = 14,
        units = "in")
@@ -101,7 +101,7 @@ ggsave(filename = "GST_heatmap_4loci_UNIFIED.pdf",
 ggsave(filename = "GST_heatmap_4loci_UNIFIED.png",
        plot = heatmap,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 12,
        width = 14,
        units = "in")
