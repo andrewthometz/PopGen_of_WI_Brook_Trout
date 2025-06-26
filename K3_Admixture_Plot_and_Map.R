@@ -21,7 +21,7 @@ library(mapmixture)
 #runPophelper()
 
 #### Prep 2111 data to work with plotting ####
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
          HUC_2 = "Hatchery",
@@ -30,7 +30,7 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName, HUC_8, HUC_2)
 
 # Read in 2205 metadata data
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   select(SampleID, WaterbodyName, HUC_8, HUC_2, Latitude, Longitude) %>% 
   bind_rows(Samples_2111)
 
@@ -39,7 +39,7 @@ Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samp
 ########################################################
 
 # Read in K = 3 STRUCTURE assignment probabilities
-K3 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
+K3 <- read_delim("X:/filepath.../Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
   select(-1) %>% 
   mutate(C3 = as.numeric(C3)) %>% 
   pivot_longer(cols = C1:C3, 
@@ -114,7 +114,7 @@ K3_plots <- K3_1 / K3_2
 ggsave(filename = "K3_str_plot.pdf",
        plot = K3_plots,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/STRUCTURE",
+       path = "X:/filepath.../Polished_plots_figures/Genetic_structure/STRUCTURE",
        height = 10,
        width = 14,
        units = "in")
@@ -122,7 +122,7 @@ ggsave(filename = "K3_str_plot.pdf",
 ggsave(filename = "K3_str_plot.png",
        plot = K3_plots,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/STRUCTURE",
+       path = "X:/filepath.../Polished_plots_figures/Genetic_structure/STRUCTURE",
        height = 10,
        width = 14,
        units = "in")
@@ -132,14 +132,14 @@ ggsave(filename = "K3_str_plot.png",
 ####################################################
 
 # Read in necessary shape files
-HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
+HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
+WMU_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
 #### Prep admixture dataframe and lat/long dataframe for mapmixture function ####
-K3_mapmixture <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
+K3_mapmixture <- read_delim("X:/filepath.../Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
   select(-1) %>% 
   left_join(Samples_2205) %>% 
   select(WaterbodyName, SampleID, C1, C2, C3) %>% 
@@ -200,7 +200,7 @@ K3_map <- mapmixture(admixture_df = K3_mapmixture,
 ggsave(filename = "K3_map.pdf",
        plot = K3_map,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/STRUCTURE",
+       path = "X:/filepath.../Polished_plots_figures/Genetic_structure/STRUCTURE",
        height = 5,
        width = 5,
        units = "in")
@@ -208,7 +208,7 @@ ggsave(filename = "K3_map.pdf",
 ggsave(filename = "K3_map.png",
        plot = K3_map,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/STRUCTURE",
+       path = "X:/filepath.../Polished_plots_figures/Genetic_structure/STRUCTURE",
        height = 5,
        width = 5,
        units = "in")
