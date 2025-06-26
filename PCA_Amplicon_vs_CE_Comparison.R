@@ -16,12 +16,12 @@ library(treedataverse)
 ########################################################################################################################
 
 # Read in amplicon genepop file
-Amp_gen <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Amplicon_genepop.gen", 
+Amp_gen <- read.genepop("X:/filepath.../CE_vs_Amp/Amplicon_genepop.gen", 
                         ncode = 3L, 
                         quiet = FALSE)
 
 # Read in CE vs Amp population data
-Amp_pop_data <- read_excel("X:/2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
+Amp_pop_data <- read_excel("X:/filepath.../2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
   filter(SampleID %in% rownames(Amp_gen@tab)) %>% 
   select(SampleID, Location) %>% 
   rename(WaterbodyName = Location) %>% 
@@ -31,12 +31,12 @@ Amp_pop_data <- read_excel("X:/2201_BKT_msat_conversion/samplesForCEComparison.x
 Amp_gen@pop <- as_factor(Amp_pop_data$WaterbodyName)
 
 # Read in metadata
-Data_2111 <- read.genepop("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/2111_genepop.gen", 
+Data_2111 <- read.genepop("X:/filepath.../2111_genepop.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in 2111 project metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   arrange(Cohort) %>% 
   filter(SampleID %in% rownames(Data_2111@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2111@tab))) %>% 
@@ -54,7 +54,7 @@ Domestics <- popsub(Data_2111,
 Domestics <- Domestics[loc = locNames(Amp_gen)]
 
 # Read in 2205 project genetic data for reference comparisons
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_genepop.gen", 
+Data_2205 <- read.genepop("X:/filepath.../2205_genepop.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
@@ -65,14 +65,14 @@ temp_gen <- Data_2205[loc = locNames(Amp_gen)]
 temp_gen %>% 
    tidy_genind() %>% 
    write_genepop(genepop.header = "59 Survey pops with just 7 CE vs Amp loci",
-                 filename = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/2205_pops_7_loci")
+                 filename = "X:/filepath.../Erdman_integration/2205_pops_7_loci")
 
-Data_2205_7_loci <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/2205_pops_7_loci.gen", 
+Data_2205_7_loci <- read.genepop("X:/filepath.../CE_vs_Amp/2205_pops_7_loci.gen", 
                                  ncode = 3L, 
                                  quiet = FALSE)
 
 # Read in project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205_7_loci@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205_7_loci@tab))) %>% 
   select(WaterbodyName, SampleID, WBIC, HUC_8, HUC_6, HUC_4, HUC_2)
@@ -128,19 +128,19 @@ pca_amp_plot <- pca_df_1 %>%
 ggsave(filename = "PCA_amplicon.pdf",
        plot = pca_amp_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Plots",
+       path = "X:/filepath.../CE_vs_Amp/Plots",
        height = 12,
        width = 12,
        units = "in")
 
 #### Run PCA with just converted capillary electrophoresis data ####
 # Read in converted CE genepop file
-CE_converted <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/CE_genepop_converted.gen", 
+CE_converted <- read.genepop("X:/filepath.../CE_vs_Amp/CE_genepop_converted.gen", 
                              ncode = 3L, 
                              quiet = FALSE)
 
 # Read in CE population data
-CE_pop_data <- read_excel("X:/2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
+CE_pop_data <- read_excel("X:/filepath.../2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
   filter(SampleID %in% rownames(CE_converted@tab)) %>% 
   select(SampleID, Location) %>% 
   rename(WaterbodyName = Location) %>% 
@@ -198,7 +198,7 @@ pca_CE_plot <- pca_df_2 %>%
 ggsave(filename = "PCA_converted_CE.pdf",
        plot = pca_CE_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Plots",
+       path = "X:/filepath.../CE_vs_Amp/Plots",
        height = 12,
        width = 12,
        units = "in")
