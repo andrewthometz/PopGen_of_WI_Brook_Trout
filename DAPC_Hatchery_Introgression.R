@@ -18,12 +18,12 @@ library(patchwork)
 
 #### Read and prep the data ####
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
+Data_2205 <- read.genepop("X:/filepath.../2205_All_63pops.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
@@ -35,7 +35,7 @@ HUCs <- Samples_2205 %>%
   distinct()
 
 # Read in St.Croix hybrid data
-St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
+St.Croix_HD <- read.genepop("X:/filepath.../Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
 
@@ -43,7 +43,7 @@ temp <- tibble(WaterbodyName = rep("St.Croix_HD", 100))
 St.Croix_HD@pop <- as_factor(temp$WaterbodyName)
 
 # Read in native hybrid data
-Hybrid_natives <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/Hybridized_natives.gen",
+Hybrid_natives <- read.genepop("X:/filepath.../Hybridized_BKT/Hybridized_natives.gen",
                                ncode = 3L, 
                                quiet = FALSE)
 
@@ -109,7 +109,7 @@ Assignment_probs %>%
             overall_sd = round(sd(Probability), 3)*100)
 
 # Means by NJ tree groupings
-Tree_groupings <- read_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/Trees/Tree_groups.csv")
+Tree_groupings <- read_csv("X:/filepath.../Structure_relatedness/Trees/Tree_groups.csv")
 
 Group_hatch_ID <- Assignment_probs %>% 
   filter(Cluster == "St. Croix Falls Strain") %>% 
@@ -129,7 +129,7 @@ Samples_2205 %>%
   select(WBIC, WaterbodyName) %>% 
   distinct() %>% 
   left_join(Ave_hatchery_ID) %>% 
-  write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Hatchery_introgression/Hatchery_ID_2205.csv")
+  write_csv("X:/filepath.../Hatchery_introgression/Hatchery_ID_2205.csv")
 
 ###################################################################
 #### Depict all assignment probabilities as admixture bar plot ####
@@ -199,7 +199,7 @@ HI_plots <- HI_plot_1 / HI_plot_2
 ggsave(filename = "Hatch_int_str_plot.pdf",
        plot = HI_plots,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Hatch_int",
+       path = "X:/filepath.../Polished_plots_figures/Hatch_int",
        height = 10,
        width = 14,
        units = "in")
@@ -207,7 +207,7 @@ ggsave(filename = "Hatch_int_str_plot.pdf",
 ggsave(filename = "Hatch_int_str_plot.png",
        plot = HI_plots,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Hatch_int",
+       path = "X:/filepath.../Polished_plots_figures/Hatch_int",
        height = 10,
        width = 14,
        units = "in")
@@ -261,7 +261,7 @@ hybrid_plots <- density_plot + hybrid_reassignment_plot
 ggsave(filename = "density_hybrids_2panel.pdf",
        plot = hybrid_plots,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Hatch_int",
+       path = "X:/filepath.../Polished_plots_figures/Hatch_int",
        height = 4,
        width = 10,
        units = "in")
@@ -269,7 +269,7 @@ ggsave(filename = "density_hybrids_2panel.pdf",
 ggsave(filename = "density_hybrids_2panel.png",
        plot = hybrid_plots,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Hatch_int",
+       path = "X:/filepath.../Polished_plots_figures/Hatch_int",
        height = 4,
        width = 10,
        units = "in")
@@ -279,11 +279,11 @@ ggsave(filename = "density_hybrids_2panel.png",
 ####################################################
 
 # Read in necessary shape files
-HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
+HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
+WMU_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
 # Prep admixture df and lat long df for mapmixture function
 HI_mapmixture <- round(prediction$posterior, 2) %>%
@@ -347,7 +347,7 @@ HI_map <- mapmixture(admixture_df = HI_mapmixture,
 ggsave(filename = "HI_map.pdf",
        plot = HI_map,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Hatch_int",
+       path = "X:/filepath.../Polished_plots_figures/Hatch_int",
        height = 5,
        width = 6,
        units = "in")
@@ -355,7 +355,7 @@ ggsave(filename = "HI_map.pdf",
 ggsave(filename = "HI_map.png",
        plot = HI_map,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Hatch_int",
+       path = "X:/filepath.../Polished_plots_figures/Hatch_int",
        height = 5,
        width = 6,
        units = "in")
