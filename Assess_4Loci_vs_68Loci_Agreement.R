@@ -11,12 +11,12 @@ library(radiator)
 
 #### Read in data ####
 # Read in 2205 genetic data at just 4 loci of interest
-Data_2205_4loci <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/2205_63pops_4loci.gen", 
+Data_2205_4loci <- read.genepop("X:/filepath.../Erdman_integration/2205_63pops_4loci.gen", 
                                 ncode = 3L, 
                                 quiet = FALSE)
 
 # Read in 2111 project metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
          HUC_2 = "Hatchery",
@@ -26,7 +26,7 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName, HUC_8, HUC_4, HUC_2)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205_4loci@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205_4loci@tab)))
@@ -88,7 +88,7 @@ GD_4loci <- bind_cols(H_expected$pop,
          "Fis_4loci" = 5)
 
 #### Read in genetic diversity data from 68 loci ####
-GD_68loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
+GD_68loci <- read_delim("X:/filepath.../Genetic_diversity/Diversity_2205.csv") %>% 
   #select(-c(1, WBIC, Ne)) %>% 
   rename(Ar_68loci = Ar,
          Ho_68loci = Ho,
@@ -247,13 +247,13 @@ gst_tidy <- gstMatrix %>%
   tidy()
 
 # Write the results to CSV
-gst_tidy %>% write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Locus_testing/Gst_4loci.csv")
+gst_tidy %>% write_csv("X:/filepath.../Erdman_integration/Locus_testing/Gst_4loci.csv")
 
 # Read the results back in
-gst_4loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Locus_testing/Gst_4loci.csv")
+gst_4loci <- read_delim("X:/filepath.../Erdman_integration/Locus_testing/Gst_4loci.csv")
 
 # Read in the 2205 project GST estimates
-gst_68loci <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/Gst_Fst/pwise_dist_2205.csv")
+gst_68loci <- read_delim("X:/filepath.../Structure_relatedness/Gst_Fst/pwise_dist_2205.csv")
 
 # Bring them together for comparison
 gst_comparison <- gst_4loci %>% 
@@ -312,7 +312,7 @@ comparison_plot <- (gst_plot | Ar_plot) / (Ho_plot | He_plot)
 ggsave(filename = "Loci_4vs68_plot.pdf",
        plot = comparison_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 8,
        width = 10,
        units = "in")
@@ -320,7 +320,7 @@ ggsave(filename = "Loci_4vs68_plot.pdf",
 ggsave(filename = "Loci_4vs68_plot.png",
        plot = comparison_plot,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 8,
        width = 10,
        units = "in")
