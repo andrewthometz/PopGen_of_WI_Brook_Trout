@@ -10,22 +10,22 @@ library(ggrepel)
 #######################################################################################################
 
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_genepop.gen", 
+Data_2205 <- read.genepop("X:/filepath.../2205_genepop.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in 2111 genetic data for reference comparisons
-Data_2111 <- read.genepop("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/2111_genepop.gen", 
+Data_2111 <- read.genepop("X:/filepath.../2111_genepop.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
 # Read in 2111 project metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(SampleID %in% rownames(Data_2111@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2111@tab))) %>% 
   mutate(WaterbodyName = case_when(str_detect(WaterbodyName, "St. Croix") ~ "St. Croix Falls domestic",
@@ -184,7 +184,7 @@ pca_df %>%
 # This may need to be revised to account for populations that have had adjacent waterbodies stocked
 
 # Read in WDNR stocking database
-Stocking_data <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Stocking_histories_2205.csv")
+Stocking_data <- read_delim("X:/filepath.../Stocking_histories_2205.csv")
 
 never_stocked <- Samples_2205 %>% 
   filter(!(HUC_12 %in% Stocking_data$HUC_12))
@@ -263,7 +263,7 @@ pca_df_2 %>%
   theme(legend.position = "none")
 
 # Plot at population level including St.Croix domestic strain hybrids
-St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
+St.Croix_HD <- read.genepop("X:/filepath.../Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
 
@@ -317,14 +317,14 @@ pca_df_2 %>%
   theme(legend.position = "none")
 
 #### Run PCA comparing the two synthetic hybrid groups #### 
-St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
+St.Croix_HD <- read.genepop("X:/filepath.../Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
 
 temp <- tibble(Hybrid_type = rep("St.Croix_HD", 500))
 St.Croix_HD@pop <- as_factor(temp$Hybrid_type)
 
-Hybrid_natives <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/Hybridized_natives_genepop.gen",
+Hybrid_natives <- read.genepop("X:/filepath.../Hybridized_BKT/Hybridized_natives_genepop.gen",
                                ncode = 3L, 
                                quiet = FALSE)
 
