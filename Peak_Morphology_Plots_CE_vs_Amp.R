@@ -6,21 +6,21 @@ library(ggforce)
 #########################################################################################################################################################
 
 #### Read in 12 BKT #### (These are the 12 fish with the greatest number of CE vs amplicon disagreements)
-BKT_17_03053 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03053.txt")
-BKT_17_03009 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03009.txt")
+BKT_17_03053 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03053.txt")
+BKT_17_03009 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03009.txt")
 BKT_17_03011 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03011.txt")
 
-BKT_17_03051 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03051.txt")
-BKT_17_03052 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03052.txt")
+BKT_17_03051 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03051.txt")
+BKT_17_03052 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03052.txt")
 BKT_17_03010 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03010.txt")
 
-BKT_17_03015 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03015.txt")
-BKT_17_03016 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03016.txt")
-BKT_17_03058 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03058.txt")
-BKT_17_03057 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03057.txt")
+BKT_17_03015 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03015.txt")
+BKT_17_03016 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03016.txt")
+BKT_17_03058 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03058.txt")
+BKT_17_03057 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03057.txt")
 
-BKT_17_03012 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03012.txt")
-BKT_17_03054 <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03054.txt")
+BKT_17_03012 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03012.txt")
+BKT_17_03054 <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_length_distribution/Genotype_17-03054.txt")
 
 #### Create a function to make the above length_dist files tidy ####
 length_dist_tidy <- function(x){
@@ -74,7 +74,7 @@ All_LD_data %>%
 
 #### Create a loop to produce peak morphology plots, one locus and 12 BKT per page #### (Saves directly as PDF)
 # Beware long run time (~40 minutes?)
-pdf("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/PeakMorph_CE_vs_Amp.pdf", paper = "a4r", width = 11, height = 9)
+pdf("X:/filepath.../PeakMorph_CE_vs_Amp.pdf", paper = "a4r", width = 11, height = 9)
 
 ProgressBar <- txtProgressBar(min = 0, max = 9, style = 3)
 
