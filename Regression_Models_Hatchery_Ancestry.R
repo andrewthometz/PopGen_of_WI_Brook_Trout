@@ -14,17 +14,17 @@ library(brms)
 ##########################################################################################
 
 # Read in project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv")
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv")
 
 # Read in WDNR stocking data for relevant HUC12s
-Stocking_data <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Stocking_histories_2205.csv")
+Stocking_data <- read_delim("X:/filepath.../Stocking_histories_2205.csv")
 
 # Read in genetic diversity data (contains Ne estimates)
-Diversity <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
+Diversity <- read_delim("X:/filepath.../Genetic_diversity/Diversity_2205.csv") %>% 
   select(-1)
 
 # Read in hatchery introgression data
-Hatchery_ID <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Hatchery_introgression/Hatchery_ID_2205.csv") %>% 
+Hatchery_ID <- read_delim("X:/filepath.../Hatchery_introgression/Hatchery_ID_2205.csv") %>% 
   select(-1)
 
 # Create stocking variables at HUC12 level
