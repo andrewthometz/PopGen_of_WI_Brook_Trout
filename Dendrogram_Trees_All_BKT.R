@@ -13,22 +13,22 @@ library(treedataverse)
 #######################################################################################################################
 
 # Read in Master brook trout genepop file
-UNIFIED_BKT <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/UNIFIED_BKT_genepop.gen",
+UNIFIED_BKT <- read.genepop("X:/filepath.../Erdman_integration/UNIFIED_BKT_genepop.gen",
                             ncode = 3L,
                             quiet = FALSE)
 
 # Read in 2111 project metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls domestic") %>% 
   select(SampleID, WaterbodyName)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111)
 
 # Read in Brad Erdman's genotype data
-Erdman_samples <- read_excel("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx")
+Erdman_samples <- read_excel("X:/filepath.../Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx")
 
 # Bind the metadata
 All_metadata <- Samples_2205 %>% 
@@ -90,7 +90,7 @@ tree_1 <- ggtree(Tree_data,
 ggsave(filename = "Tree_UNIFIED_BKT.png",
        plot = tree_1,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 12,
        width = 9,
        units = "in")
