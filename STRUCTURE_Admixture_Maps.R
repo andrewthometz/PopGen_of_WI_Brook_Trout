@@ -12,7 +12,7 @@ library(mapmixture)
 ########################################################################################
 
 # Prep 2111 proejct data to work with plotting
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
          HUC_2 = "Hatchery",
@@ -21,18 +21,18 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName, HUC_8, HUC_2)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   select(SampleID, WaterbodyName, HUC_8, HUC_2, Latitude, Longitude) %>% 
   bind_rows(Samples_2111)
 
 #### Plot the survey locations on a map ####
 # Read in necessary shape files
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
+WMU_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
 # Prep admixture dataframe and latitude/longitude dataframe for mapmixture function at K=3 configuration
-K3_mapmixture <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
+K3_mapmixture <- read_delim("X:/filepath.../Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K3_AssProbs_CleanedUp.txt") %>% 
   select(-1) %>% 
   left_join(Samples_2205) %>% 
   select(WaterbodyName, SampleID, C1, C2, C3) %>% 
@@ -98,7 +98,7 @@ K3_map <- mapmixture(admixture_df = K3_mapmixture,
           #      axis.title.x = element_blank())
 
 #### Read in K=6 STRUCTURE output ####
-K6 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K6_AssProbs_CleanedUp.txt") %>% 
+K6 <- read_delim("X:/filepath.../Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K6_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C6 = as.numeric(C6)) %>% 
   rename(K1 = C4,
@@ -155,7 +155,7 @@ K6_map <- mapmixture(admixture_df = K6_mapmixture,
   #      axis.title.y = element_blank())
 
 #### Read in K=9 STRUCTURE output ####
-K9 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K9_AssProbs_CleanedUp.txt") %>% 
+K9 <- read_delim("X:/filepath.../Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K9_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C9 = as.numeric(C9)) %>% 
   rename(K1 = C2,
@@ -216,7 +216,7 @@ STRUCTURE_maps <- K3_map + K6_map + K9_map + guide_area() + plot_layout(guides =
 ggsave(filename = "STRUCTURE_maps_3panel.pdf",
        plot = STRUCTURE_maps,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/STRUCTURE",
+       path = "X:/filepath.../Polished_plots_figures/Genetic_structure/STRUCTURE",
        height = 8,
        width = 7,
        units = "in")
@@ -224,7 +224,7 @@ ggsave(filename = "STRUCTURE_maps_3panel.pdf",
 ggsave(filename = "STRUCTURE_maps_3panel.png",
        plot = STRUCTURE_maps,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Genetic_structure/STRUCTURE",
+       path = "X:/filepath.../Polished_plots_figures/Genetic_structure/STRUCTURE",
        height = 8,
        width = 7,
        units = "in")
