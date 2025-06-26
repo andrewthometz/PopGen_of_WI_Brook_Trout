@@ -14,18 +14,18 @@ library(treedataverse)
 ##############################################################################
 
 # Read in 2205 project genetic data
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
+Data_2205 <- read.genepop("X:/filepath.../Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Prep 2111 project data to work with plotting
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain") %>% 
   select(SampleID, WaterbodyName)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
@@ -146,7 +146,7 @@ tree_1 <- ggtree(Tree_data,
 ggsave(filename = "Best_NJtree_2205.pdf",
        plot = tree_1,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Trees",
+       path = "X:/filepath.../Polished_plots_figures/Trees",
        height = 10,
        width = 9,
        units = "in")
@@ -154,7 +154,7 @@ ggsave(filename = "Best_NJtree_2205.pdf",
 ggsave(filename = "Best_NJtree_2205.png",
        plot = tree_1,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/Trees",
+       path = "X:/filepath.../Polished_plots_figures/Trees",
        height = 10,
        width = 9,
        units = "in")
