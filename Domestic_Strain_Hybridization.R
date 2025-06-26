@@ -14,13 +14,13 @@ library(radiator)
 #################################################################################################################################################################
 
 # Read in 2111 genetic data
-Data_2111 <- read.genepop("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/2111_genepop.gen", 
+Data_2111 <- read.genepop("X:/filepath.../2111_genepop.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in 2111 project metadata
 set.seed(27)
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(SampleID %in% rownames(Data_2111@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2111@tab))) %>% 
   #filter(Cohort == "Domestic") %>% 
@@ -43,10 +43,10 @@ hybridize(Group_1, Group_2,
           hyb.label = "HD") %>% 
   tidy_genind() %>% 
   write_genepop(genepop.header = "St.Croix hybridized domestic fish (n = 100)",
-                filename = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD")
+                filename = "X:/filepath.../Hybridized_BKT/St.Croix_HD")
 
 # May have to manually fill pop slot when reading in the genepop file as shown below:
-St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
+St.Croix_HD <- read.genepop("X:/filepath.../Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
 
