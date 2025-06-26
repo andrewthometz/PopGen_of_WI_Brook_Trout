@@ -10,7 +10,7 @@ library(poppr)
 
 #### Read in locus data and tidy ####
 # Read in final locus selections
-Locus_data <- read_excel("X:/2111_F1F2D_BKT/BKT_Locus_Evaluation.xlsx") %>% 
+Locus_data <- read_excel("X:/filepath.../BKT_Locus_Evaluation.xlsx") %>% 
   select(1:9)
 
 hwe_cutoff <- 0.15
@@ -25,7 +25,7 @@ Final_loci <- Locus_data %>%
   select(Locus)
 
 # Read in capillary electrophoresis data and tidy
-CE_genotypes <- read_excel("X:/2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
+CE_genotypes <- read_excel("X:/filepath.../2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
   select(!c("Location", "LocationCode", "SampleCode"))
 
 colnames(CE_genotypes) <- CE_genotypes %>% 
@@ -46,7 +46,7 @@ CE_tidy <- CE_genotypes %>%
   #mutate(Locus = str_replace_all(Locus, "_b", ""), .keep = "unused")
 
 # Read in amplicon data and tidy
-Amplicon_genotypes <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_Genotype.txt") %>% 
+Amplicon_genotypes <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_Genotype.txt") %>% 
   rename(SampleID = Sample_idx1_idx2) %>% 
   mutate(SampleID = case_when(SampleID == "17-03009" ~ "17-03051",
                               SampleID == "17-03010" ~ "17-03052",
@@ -81,7 +81,7 @@ Amp_tidy <- Amplicon_genotypes %>%
   mutate(Amp_allele = as.numeric(Amp_allele))
 
 # Bring in amplicon read depth data
-Amplicon_depths <- read_delim("X:/2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_coverage.txt") %>% 
+Amplicon_depths <- read_delim("X:/filepath.../2201_BKT_msat_conversion/Sfon_2201-001_paired_uSat_output/Sfon_2201-001_coverage.txt") %>% 
   select(-sum) %>% 
   pivot_longer(cols = 2:97,
                names_to = "SampleID",
@@ -114,7 +114,7 @@ Allele_diffs_count <- CE_vs_Amp %>%
 ggsave(filename = "Allele_diffs_count.pdf",
        plot = Allele_diffs_count,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Plots",
+       path = "X:/filepath.../CE_vs_Amp/Plots",
        height = 10,
        width = 14,
        units = "in")  
@@ -135,7 +135,7 @@ Allele_diffs_prop <- CE_vs_Amp %>%
 ggsave(filename = "Allele_diffs_prop.pdf",
        plot = Allele_diffs_prop,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Plots",
+       path = "X:/filepath.../CE_vs_Amp/Plots",
        height = 10,
        width = 14,
        units = "in")  
@@ -167,10 +167,10 @@ fish_errors <- CE_vs_Amp %>%
   arrange(desc(n_locus_errors)) # Sending these top 12 fish through my peak morphology script
 
 # Write this as a CSV
-write_csv(fish_errors, file = "X:/2111_F1F2D_BKT/Fish_w_loc_diffs.csv")
+write_csv(fish_errors, file = "X:/filepath.../Fish_w_loc_diffs.csv")
 
 #### Create conversion error plots and print onto PDF ####
-pop_data <- read_excel("X:/2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
+pop_data <- read_excel("X:/filepath.../2201_BKT_msat_conversion/samplesForCEComparison.xlsx") %>% 
   select(Location, SampleID) %>% 
   rename(WaterbodyName = Location)
 
@@ -214,7 +214,7 @@ all_pops_plot <- all_pops %>%
 ggsave(filename = "All_fish_errors.pdf",
        plot = all_pops_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Plots",
+       path = "X:/filepath.../CE_vs_Amp/Plots",
        height = 10,
        width = 14,
        units = "in")  
@@ -241,7 +241,7 @@ all_locus_plot <- all_pops %>%
 ggsave(filename = "All_locus_errors.pdf",
        plot = all_locus_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/CE_vs_Amp/Plots",
+       path = "X:/filepath.../CE_vs_Amp/Plots",
        height = 10,
        width = 14,
        units = "in")  
