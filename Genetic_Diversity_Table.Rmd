@@ -33,12 +33,12 @@ library(radiator)
 
 #### Read in data ####
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
+Data_2205 <- read.genepop("X:/filepath.../2205_All_63pops.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
@@ -115,12 +115,12 @@ GD_tibble <- bind_cols(H_expected$pop,
          "Fis" = 5)
 
 #### Bring in hatchery introgression data ####
-hatch_int <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Hatchery_introgression/Hatchery_ID_2205.csv") %>% 
+hatch_int <- read_delim("X:/filepath.../Hatchery_introgression/Hatchery_ID_2205.csv") %>% 
   select(WaterbodyName, Ave_hatchery_ID) %>% 
   mutate(Ave_hatchery_ID = round(Ave_hatchery_ID*100, 2))
 
 #### Bring in effective population size (Ne) data ####
-Ne_output <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") 
+Ne_output <- read_delim("X:/filepath.../Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") 
 
 samples_temp <- Samples_2205 %>% 
   select(SampleID, Latitude, Longitude, WaterbodyName, HUC_8)
@@ -139,7 +139,7 @@ final_table <- Ne_output %>%
   arrange(HUC_8, WaterbodyName)
 
 # Write as CSV
-write.csv(final_table, "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv",
+write.csv(final_table, "X:/filepath.../Genetic_diversity/Diversity_2205.csv",
           row.names = FALSE)
 
 ```
