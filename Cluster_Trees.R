@@ -19,7 +19,7 @@ library(treedataverse)
 #### K = 6 STRUCTURE run ####
 
 # Prep 2111 data to work with plotting
-Samples_2111 <- read_delim("C:/Users/27tho/UWSP Backup/2111/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("C:/filepath.../Samples_2205.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
          HUC_2 = "Hatchery",
@@ -28,18 +28,18 @@ Samples_2111 <- read_delim("C:/Users/27tho/UWSP Backup/2111/2111analysis/Thometz
   select(SampleID, WaterbodyName, HUC_8, HUC_2)
 
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("C:/Users/27tho/UWSP Backup/2205/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
+Data_2205 <- read.genepop("C:/filepath.../63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in project metadata
-Samples_2205 <- read_delim("C:/Users/27tho/UWSP Backup/2205/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("C:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
 # Read in STRUCTURE data
-K6 <- read_delim("C:/Users/27tho/UWSP Backup/2205/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K6_AssProbs_CleanedUp.txt") %>% 
+K6 <- read_delim("C:/filepath.../K6_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C6 = as.numeric(C6)) %>% 
   rename(K1 = C4,
@@ -115,7 +115,7 @@ tree_K6 <- ggtree(Tree_data,
 #### K = 9 STRUCTURE run ####
 
 # Prep 2111 data to work with plotting
-Samples_2111 <- read_delim("C:/Users/27tho/UWSP Backup/2111/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("C:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
          HUC_2 = "Hatchery",
@@ -124,19 +124,19 @@ Samples_2111 <- read_delim("C:/Users/27tho/UWSP Backup/2111/2111analysis/Thometz
   select(SampleID, WaterbodyName, HUC_8, HUC_2)
 
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("C:/Users/27tho/UWSP Backup/2205/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
+Data_2205 <- read.genepop("C:/filepath.../63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in project metadata
-Samples_2205 <- read_delim("C:/Users/27tho/UWSP Backup/2205/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("C:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
 
 # Read in STRUCTURE data
-K9 <- read_delim("C:/Users/27tho/UWSP Backup/2205/Thometz_scripts/Analyses/Structure_relatedness/STRUCTURE/Final_run_2205/AssProbs_CleanedUp/K9_AssProbs_CleanedUp.txt") %>% 
+K9 <- read_delim("C:/filepath.../K9_AssProbs_CleanedUp.txt") %>% 
   select(-c(n, percent_miss)) %>% 
   mutate(C9 = as.numeric(C9)) %>% 
   rename(K1 = C2,
