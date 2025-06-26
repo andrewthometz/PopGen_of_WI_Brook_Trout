@@ -14,7 +14,7 @@ library(ggOceanMaps)
 #############################################################################################################
 
 #### Read in Master brook trout genepop file ####
-UNIFIED_BKT <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/UNIFIED_BKT_genepop.gen",
+UNIFIED_BKT <- read.genepop("X:/filepath.../Erdman_integration/UNIFIED_BKT_genepop.gen",
                             ncode = 3L,
                             quiet = FALSE)
 
@@ -30,7 +30,7 @@ nAll(UNIFIED_BKT) %>%
 
 #### Read in metadata ####
 # 2111 project metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls domestic",
          HUC_2 = "Hatchery",
@@ -40,14 +40,14 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName, HUC_8, HUC_4, HUC_2)
 
 # 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   #filter(SampleID %in% rownames(UNIFIED_BKT@tab)) %>% 
   #arrange(match(SampleID, rownames(UNIFIED_BKT@tab))) %>% 
   mutate(Data_source = "Thometz")
 
 # Erdman's data
-Erdman_samples <- read_excel("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>%
+Erdman_samples <- read_excel("X:/filepath.../Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>%
   mutate(Data_source = "Erdman")
 
 Erdman_samples %>% 
@@ -125,11 +125,11 @@ GD_tibble <- bind_cols(H_expected$pop,
 #############################################
 
 # Read in necessary shape files
-HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
+HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-HUC4_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/NHD_H_Wisconsin_State_Shape/Shape/WBDHU4.shp") %>% 
+HUC4_shp <- read_sf("X:/filepath.../Mapping_shapefiles/NHD_H_Wisconsin_State_Shape/Shape/WBDHU4.shp") %>% 
   filter(name %in% Samples_2205$HUC_4)
 
 HUC4_clipped <- clip_shapefile(HUC4_shp,
@@ -180,7 +180,7 @@ Ar_map <- HUC4_clipped %>%
 ggsave(filename = "Ar_map_unified_BKT.pdf",
        plot = Ar_map,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 5,
        width = 5,
        units = "in")
@@ -188,7 +188,7 @@ ggsave(filename = "Ar_map_unified_BKT.pdf",
 ggsave(filename = "Ar_map_unified_BKT.png",
        plot = Ar_map,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 5,
        width = 5,
        units = "in")
@@ -227,7 +227,7 @@ Ar_lat_plot <- model_df %>%
 ggsave(filename = "Ar_lat_regression_unified_BKT.pdf",
        plot = Ar_lat_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 5,
        width = 6,
        units = "in")
@@ -235,7 +235,7 @@ ggsave(filename = "Ar_lat_regression_unified_BKT.pdf",
 ggsave(filename = "Ar_lat_regression_unified_BKT.png",
        plot = Ar_lat_plot,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Plots_figures",
+       path = "X:/filepath.../Erdman_integration/Plots_figures",
        height = 5,
        width = 6,
        units = "in")
