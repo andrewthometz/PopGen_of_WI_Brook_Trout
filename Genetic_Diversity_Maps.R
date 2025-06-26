@@ -17,20 +17,20 @@ library(ggmap)
 #########################################################################################
 
 #### Grab lats/long coordinates from 2205 project metadata ####
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   select(WaterbodyName, HUC_8, HUC_4, HUC_12, Latitude, Longitude, WBIC) %>% 
   distinct()
 
 # Read in master genetic diversity file for 2205 project
-GD_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
+GD_2205 <- read_delim("X:/filepath.../Genetic_diversity/Diversity_2205.csv") %>% 
   left_join(Samples_2205)
 
 # Read in necessary shape files
-HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
+HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-HUC4_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/NHD_H_Wisconsin_State_Shape/Shape/WBDHU4.shp") %>% 
+HUC4_shp <- read_sf("X:/filepath.../Mapping_shapefiles/NHD_H_Wisconsin_State_Shape/Shape/WBDHU4.shp") %>% 
   filter(name %in% Samples_2205$HUC_4)
 
 HUC4_clipped <- clip_shapefile(HUC4_shp,
@@ -75,7 +75,7 @@ Standard_map <- WMU_shp %>%
 ggsave(filename = "Standard_sites_map.pdf",
        plot = Standard_map,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/GD_maps",
+       path = "X:/filepath.../Thometz_scripts/Polished_plots_figures/GD_maps",
        height = 5,
        width = 5,
        units = "in")
@@ -83,7 +83,7 @@ ggsave(filename = "Standard_sites_map.pdf",
 ggsave(filename = "Standard_sites_map.png",
        plot = Standard_map,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/GD_maps",
+       path = "X:/filepath.../Thometz_scripts/Polished_plots_figures/GD_maps",
        height = 5,
        width = 5,
        units = "in")
@@ -226,7 +226,7 @@ ggsave(filename = "GD_maps_4panel.pdf",
 ggsave(filename = "GD_maps_4panel.png",
        plot = GD_maps,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/GD_maps",
+       path = "X:/filepath.../Polished_plots_figures/GD_maps",
        height = 8,
        width = 8,
        units = "in")
@@ -238,11 +238,11 @@ ggsave(filename = "GD_maps_4panel.png",
 # (middle Ne value is median, not mean)
 
 # Read in 2205 project metadata
-samples_temp <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+samples_temp <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   select(SampleID, WBIC)
 
 # Read in Ne estimates
-Ne_estimates <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") %>% 
+Ne_estimates <- read_delim("X:/filepath.../Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") %>% 
   select(SampleID, Ne) %>% 
   left_join(samples_temp) %>% 
   select(-SampleID) %>% 
@@ -294,7 +294,7 @@ Ne_map <- HUC4_clipped %>%
 ggsave(filename = "Ne_map.pdf",
        plot = Ne_map,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/GD_maps",
+       path = "X:/filepath.../Polished_plots_figures/GD_maps",
        height = 5,
        width = 5,
        units = "in")
@@ -302,7 +302,7 @@ ggsave(filename = "Ne_map.pdf",
 ggsave(filename = "Ne_map.png",
        plot = Ne_map,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures/GD_maps",
+       path = "X:/filepath.../Polished_plots_figures/GD_maps",
        height = 5,
        width = 5,
        units = "in")
