@@ -9,10 +9,10 @@ library(miscTools)
 
 #### Prepare the data and loci ####
 # Read in 2205 metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") 
 
 # Final locus selections
-Locus_data <- read_excel("X:/2111_F1F2D_BKT/BKT_Locus_Evaluation.xlsx") %>% 
+Locus_data <- read_excel("X:/filepath.../BKT_Locus_Evaluation.xlsx") %>% 
   select(1:9)
 
 hwe_cutoff <- 0.15
@@ -27,7 +27,7 @@ Final_loci <- Locus_data %>%
   select(Locus)
 
 # Read in genotypes, merge with sample data, organize by population, remove negative controls
-genotype_2205 <- read_excel("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/Genotype_2205.xlsx",
+genotype_2205 <- read_excel("X:/filepath.../2205_MEGAsat_outputs/Genotype_2205.xlsx",
                            col_types = "text") %>% 
   rename(SampleID = Sample_idx1_idx2)
 
@@ -112,7 +112,7 @@ genotype_matrix <- insertRow(genotype_matrix, 2, c(locus_names_2, rep("", ncol(g
 genotype_matrix <- insertRow(genotype_matrix, 3, pop_line)
 
 # Export file
-write.table(genotype_matrix, file = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_genepop.gen",
+write.table(genotype_matrix, file = "X:/filepath.../2205_genepop.gen",
             quote = FALSE,
             col.names = FALSE,
             row.names = FALSE)
