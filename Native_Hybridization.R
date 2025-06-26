@@ -15,12 +15,12 @@ library(radiator)
 ##################################################################################################################################################
 
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
+Data_2205 <- read.genepop("X:/filepath.../2205_All_63pops.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
@@ -32,7 +32,7 @@ Data_2205@pop <- as_factor(Samples_2205$WaterbodyName)
 #  distinct()
 
 # Read in St.Croix hybrid data
-St.Croix_HD <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/St.Croix_HD_genepop.gen", 
+St.Croix_HD <- read.genepop("X:/filepath.../Hybridized_BKT/St.Croix_HD_genepop.gen", 
                             ncode = 3L, 
                             quiet = FALSE)
 
@@ -46,10 +46,10 @@ Joined_genind <- repool(Data_2205, St.Croix_HD)
 # Beware this takes ~ 5 min to run
 gd.smouse(Joined_genind, verbose = TRUE) %>% 
   tidy() %>% 
-  write.csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/gd.smouse.csv")
+  write.csv("X:/filepath.../Hybridized_BKT/gd.smouse.csv")
 
 # Read the results back in
-result_tidy <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/gd.smouse.csv") %>% 
+result_tidy <- read_delim("X:/filepath.../Hybridized_BKT/gd.smouse.csv") %>% 
   select(-1)
 
 ###########################################################################################
@@ -58,7 +58,7 @@ result_tidy <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybri
 # Needed to be manually reviewed due to adjacent stocking events
 
 # Read in WDNR stocking database #
-Stocking_data <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Stocking_histories_2205.csv")
+Stocking_data <- read_delim("X:/filepath.../Stocking_histories_2205.csv")
 
 never_stocked <- Samples_2205 %>% 
   filter(!(HUC_12 %in% Stocking_data$HUC_12),
@@ -119,10 +119,10 @@ hybridize(Group_1, Group_2,
           hyb.label = "HN") %>% 
   tidy_genind() %>% 
   write_genepop(genepop.header = "Hybridized native fish (n = 100)",
-                filename = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/Hybridized_natives")
+                filename = "X:/filepath.../Hybridized_BKT/Hybridized_natives")
 
 # Read the Hybrid Native genetic data back in
-Hybrid_natives <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Hybridized_BKT/Hybridized_natives.gen",
+Hybrid_natives <- read.genepop("X:/filepath.../Hybridized_BKT/Hybridized_natives.gen",
                                ncode = 3L, 
                                quiet = FALSE)
 
@@ -137,11 +137,11 @@ library(sf)
 library(ggspatial)
 
 # Read in necessary shape files
-HUC8_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
+HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digit_(Subbasins)/Hydrologic_Units_-_8_digit_(Subbasins).shp")
 
-HUC2_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Major_Basins/Major_Basins.shp")
+HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
+WMU_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
 unstocked_map <- Samples_2205 %>% 
   filter(WaterbodyName %in% never_stocked$WaterbodyName) %>% 
