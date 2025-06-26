@@ -12,12 +12,12 @@ data(VPLandscapeGenetics)
 ##########################################################################################################
 
 # Read in 2205 genetic data
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_All_63pops.gen", 
+Data_2205 <- read.genepop("X:/filepath.../2205_All_63pops.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
 
@@ -84,7 +84,7 @@ pub.plot <- bkt.results %>%
 ggsave(filename = "Mantel_correlation.pdf",
        plot = pub.plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 4,
        width = 5,
        units = "in")
@@ -92,7 +92,7 @@ ggsave(filename = "Mantel_correlation.pdf",
 ggsave(filename = "Mantel_correlation.png",
        plot = pub.plot,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 4,
        width = 5,
        units = "in")
