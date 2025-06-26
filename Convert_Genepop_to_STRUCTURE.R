@@ -13,12 +13,12 @@ library(poppr)
 ################################################################################
 
 # Read genind file containing random subsample of 30 St. Croix domestic strain fish
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
+Data_2205 <- read.genepop("X:/filepath.../Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Read in 2111 project metadata
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab))) %>% 
   mutate(WaterbodyName = case_when(str_detect(WaterbodyName, "St. Croix") ~ "St. Croix Falls domestic",
@@ -26,7 +26,7 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName)
 
 # Read in 2205 project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>%
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab))) 
@@ -36,8 +36,8 @@ Data_2205@pop <- as_factor(Samples_2205$WaterbodyName)
 #### Convert genind data to STRUCTURE input format #### (This package/function did not work well, use function below instead)
 library(graph4lg)
 #test <- popsub(Data_2205, sublist = c("Tomorrow River", "Bruce Creek"))
-#genind_to_structure(test, output = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/STRUCTURE/test.txt")
-#genind_to_structure(Joined_2205_2111, output = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/STRUCTURE/STR_input_2205_2111.txt")
+#genind_to_structure(test, output = "X:/filepath.../STRUCTURE/test.txt")
+#genind_to_structure(Joined_2205_2111, output = "X:/filepath.../STRUCTURE/STR_input_2205_2111.txt")
 
 #### Convert genind data to STRUCTURE input format using genepopedit package instead ####
 devtools::install_github("rystanley/genepopedit") 
