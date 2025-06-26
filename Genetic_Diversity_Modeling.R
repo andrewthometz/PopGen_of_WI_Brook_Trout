@@ -12,7 +12,7 @@ library (broom)
 ##################################################################################################
 
 # Read in genetic diversity file for 2205 project
-GD_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Diversity_2205.csv") %>% 
+GD_2205 <- read_delim("X:/filepath.../Genetic_diversity/Diversity_2205.csv") %>% 
   select(-1)
 
 # Observed heterozygosity (Ho)
@@ -57,7 +57,7 @@ Ar_lat_plot <- GD_2205 %>%
 ggsave(filename = "Ar_latitude_regression.pdf",
        plot = Ar_lat_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 4.5,
        width = 5,
        units = "in")
@@ -65,18 +65,18 @@ ggsave(filename = "Ar_latitude_regression.pdf",
 ggsave(filename = "Ar_latitude_regression.png",
        plot = Ar_lat_plot,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 4.5,
        width = 5,
        units = "in")
 
 #### Model the relationship between effective population size (Ne) and latitude ####
 # Read in 2205 metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   select(SampleID, WaterbodyName, Latitude)
 
 # Read in effective population size (Ne) data
-Ne_tidy <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") %>% 
+Ne_tidy <- read_delim("X:/filepath.../Genetic_diversity/Ne/Ne_All_63pops_LD_CleanedUp.txt") %>% 
   select(SampleID, Ne) %>% 
   left_join(Samples_2205) %>% 
   select(-SampleID) %>% 
@@ -111,7 +111,7 @@ Ne_lat_plot <- Ne_tidy %>%
 ggsave(filename = "Ne_latitude_regression.pdf",
        plot = Ne_lat_plot,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 4.5,
        width = 5,
        units = "in")
@@ -119,7 +119,7 @@ ggsave(filename = "Ne_latitude_regression.pdf",
 ggsave(filename = "Ne_latitude_regression.png",
        plot = Ne_lat_plot,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 4.5,
        width = 5,
        units = "in")
