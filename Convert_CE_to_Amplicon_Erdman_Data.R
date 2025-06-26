@@ -10,11 +10,11 @@ library(miscTools)
 #### Convert capillary electrophoresis genotypes to amplicon genotypes using specific values ####
 
 # Read in Erdman's population data
-Erdman_pop_data <- read_excel("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>% 
+Erdman_pop_data <- read_excel("X:/filepath.../Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>% 
   select(SampleID, WaterbodyName)
 
 # Read in capillary electrophoresis data and tidy
-Erdman_genotypes_all <- read_excel("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>% 
+Erdman_genotypes_all <- read_excel("X:/filepath.../Erdman_integration/Erdman_WI_BKT_Genotypes.xlsx") %>% 
   select(-c(Pop, WBIC, WaterbodyName, Latitude, Longitude, Data_Source, HUC_2, HUC_4, HUC_6, HUC_8, HUC_10, HUC_12))
 
 # Remove loci we aren't interested in and apply capillary electrophesis to amplicon genotype conversions
@@ -111,7 +111,7 @@ genotype_matrix <- insertRow(genotype_matrix, 2, c(locus_names_2, rep("", ncol(g
 genotype_matrix <- insertRow(genotype_matrix, 3, pop_line)
 
 # Export file
-write.table(genotype_matrix, file = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Erdman_integration/Erdman_converted.gen",
+write.table(genotype_matrix, file = "X:/filepath.../Erdman_integration/Erdman_converted.gen",
             quote = FALSE,
             col.names = FALSE,
             row.names = FALSE)
