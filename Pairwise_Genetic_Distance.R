@@ -13,12 +13,12 @@ library(poppr)
 ####################################################################################
 
 # Read in 2205 project data (with 30 random domestic strain fish from 2111 project)
-Data_2205 <- read.genepop("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/63pops_plus_30domestics.gen", 
+Data_2205 <- read.genepop("X:/filepath.../Structure_relatedness/63pops_plus_30domestics.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
 
 # Prep 2111 data to work with plotting
-Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Samples_2111.csv") %>% 
+Samples_2111 <- read_delim("X:/filepath.../Samples_2111.csv") %>% 
   filter(Cohort == "Domestic") %>% 
   mutate(WaterbodyName = "St. Croix Falls Strain",
          HUC_2 = "Hatchery",
@@ -27,7 +27,7 @@ Samples_2111 <- read_delim("X:/2111_F1F2D_BKT/2111analysis/Thometz_scripts/Sampl
   select(SampleID, WaterbodyName, HUC_8, HUC_2)
 
 # Read in project metadata
-Samples_2205 <- read_delim("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Samples_2205.csv") %>% 
+Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
   bind_rows(Samples_2111) %>% 
   filter(SampleID %in% rownames(Data_2205@tab)) %>% 
   arrange(match(SampleID, rownames(Data_2205@tab)))
@@ -53,7 +53,7 @@ mean_distances <- gst_tidy %>%
   summarize(average_dist = round(mean(distance), digits = 3))
 
 # Write the results as CSV
-gst_tidy %>% write_csv("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Analyses/Structure_relatedness/Gst_Fst/pwise_dist_2205.csv")
+gst_tidy %>% write_csv("X:/filepath.../Structure_relatedness/Gst_Fst/pwise_dist_2205.csv")
 
 ############################################################################################
 #### Produce a heatmap to display pairwise genetic distance values for every population ####
@@ -86,7 +86,7 @@ heatmap <- gst_tidy %>%
 ggsave(filename = "GST_heatmap.pdf",
        plot = heatmap,
        device = "pdf",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 8,
        width = 10,
        units = "in")
@@ -94,7 +94,7 @@ ggsave(filename = "GST_heatmap.pdf",
 ggsave(filename = "GST_heatmap.png",
        plot = heatmap,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 8,
        width = 10,
        units = "in")
