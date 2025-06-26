@@ -7,22 +7,22 @@ library(ggforce)
 #####################################################################################
 
 #### Read in 12 BKT #### (I grabbed largest few files from each cat folder. I used some from each folder to get even representation)
-BKT_18_06622 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_18-06622.txt")
-BKT_18_06180 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_18-06180.txt")
-BKT_15_03167 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_15-03167.txt")
+BKT_18_06622 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_18-06622.txt")
+BKT_18_06180 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_18-06180.txt")
+BKT_15_03167 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_1of5_Msat_output/length_distribution/Genotype_15-03167.txt")
 
-BKT_21_10773 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_2of5_Msat_output/length_distribution/Genotype_21-10773.txt")
-BKT_19_21562 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_2of5_Msat_output/length_distribution/Genotype_19-21562.txt")
-BKT_18_07013 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_2of5_Msat_output/length_distribution/Genotype_18-07013.txt")
+BKT_21_10773 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_2of5_Msat_output/length_distribution/Genotype_21-10773.txt")
+BKT_19_21562 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_2of5_Msat_output/length_distribution/Genotype_19-21562.txt")
+BKT_18_07013 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_2of5_Msat_output/length_distribution/Genotype_18-07013.txt")
 
-BKT_22_12362 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_3of5_Msat_output/length_distribution/Genotype_22-12362.txt")
-BKT_22_10464 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_3of5_Msat_output/length_distribution/Genotype_22-10464.txt")
+BKT_22_12362 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_3of5_Msat_output/length_distribution/Genotype_22-12362.txt")
+BKT_22_10464 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_3of5_Msat_output/length_distribution/Genotype_22-10464.txt")
 
-BKT_22_12613 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_4of5_Msat_output/length_distribution/Genotype_22-12613.txt")
-BKT_22_12710 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_4of5_Msat_output/length_distribution/Genotype_22-12710.txt")
+BKT_22_12613 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_4of5_Msat_output/length_distribution/Genotype_22-12613.txt")
+BKT_22_12710 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_4of5_Msat_output/length_distribution/Genotype_22-12710.txt")
 
-BKT_22_13858 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_5of5_Msat_output/length_distribution/Genotype_22-13858.txt")
-BKT_22_15856 <- read_delim("X:/2205_BKT_feral_broodstock_ID/2205_MEGAsat_outputs/2205_paired_5of5_Msat_output/length_distribution/Genotype_22-15856.txt")
+BKT_22_13858 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_5of5_Msat_output/length_distribution/Genotype_22-13858.txt")
+BKT_22_15856 <- read_delim("X:/filepath.../2205_MEGAsat_outputs/2205_paired_5of5_Msat_output/length_distribution/Genotype_22-15856.txt")
 
 #### Create a function to make the above length_dist files tidy ####
 length_dist_tidy <- function(x){
@@ -64,7 +64,7 @@ All_LD_data %>%
 
 #### Create a loop to produce many pages of peak morphology plots, 1 locus and 12 fish per page #### (Saves directly as pdf)
 # Beware, this takes about 40min to run
-pdf("X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/2205_PeakMorph_Thometz.pdf", paper = "a4r", width = 11, height = 9)
+pdf("X:/filepath.../2205_PeakMorph_Thometz.pdf", paper = "a4r", width = 11, height = 9)
 
 ProgressBar <- txtProgressBar(min = 0, max = 91, style = 3)
 
@@ -173,7 +173,7 @@ onefish_nineloci <- Filtered_tibble %>%
 ggsave(filename = "Peakmorph_1fish_9loci.png",
        plot = onefish_nineloci,
        device = "png",
-       path = "X:/2205_BKT_feral_broodstock_ID/Thometz_scripts/Polished_plots_figures",
+       path = "X:/filepath.../Polished_plots_figures",
        height = 8,
        width = 8,
        units = "in")
