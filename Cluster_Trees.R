@@ -12,9 +12,9 @@ library(BiocManager)
 # BiocManager::install("YuLab-SMU/treedataverse")
 library(treedataverse)
 
-#################################################################################
-#### Run DAPC and create a figure of a cluster trees from DAPC and STRUCTURE ####
-#################################################################################
+#########################################################################
+#### Create a figure of a cluster dendrograms from STRUCTURE outputs ####
+#########################################################################
 
 #### K = 6 STRUCTURE run ####
 
