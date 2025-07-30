@@ -13,9 +13,9 @@ library(ggOceanMaps)
 
 library(ggmap)
 
-#########################################################################################
-#### Produce a map that displays the HUC 4 subregions and Drifless Area of Wisconsin ####
-#########################################################################################
+##########################################################################################
+#### Produce a map that displays the HUC 4 subregions and Driftless Area of Wisconsin ####
+##########################################################################################
 
 # Grab lats/long coordinates from Samples_2205
 Samples_2205 <- read_delim("X:/filepath.../Samples_2205.csv") %>% 
@@ -27,7 +27,7 @@ HUC8_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Hydrologic_Units_-_8_digi
 
 HUC2_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Major_Basins/Major_Basins.shp")
 
-#WMU_shp <- read_sf("X:/2205_BKT_feral_broodstock_ID/Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
+#WMU_shp <- read_sf("X:/filepath.../Mapping_shapefiles/Water_Management_Units/Water_Management_Units.shp")
 
 DriftlessArea <- read_sf("X:/filepath.../Mapping_shapefiles/FHP_DARE_Boundary_2013.shp/FHP_DARE_Boundary_2013.shp")
 
@@ -91,10 +91,10 @@ HUC_DA_map <- HUC4_clipped$shapefile %>%
   #labs(x = "Longitude",
   #     y = "Latitude") +
   #annotation_scale(location = "tr") +
-  annotation_north_arrow(location = "bl", 
+  annotation_north_arrow(location = "tr", 
                          which_north = "true", 
                          pad_x = unit(0.5, "in"), 
-                         pad_y = unit(1, "in"),
+                         pad_y = unit(0.5, "in"),
                          style = north_arrow_orienteering) +
   #theme_classic() +
   theme(axis.line = element_blank(),
