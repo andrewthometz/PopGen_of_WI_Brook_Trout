@@ -9,9 +9,9 @@ library(BiocManager)
 #BiocManager::install("YuLab-SMU/treedataverse")
 library(treedataverse)
 
-##############################################################################
-#### Build trees to identify genetic relatedness among survey populations ####
-##############################################################################
+############################################################################################
+#### Build a tree (dendrogram) to identify genetic relatedness among survey populations ####
+############################################################################################
 
 # Read in 2205 project genetic data
 Data_2205 <- read.genepop("X:/filepath.../Structure_relatedness/63pops_plus_30domestics.gen", 
@@ -88,25 +88,25 @@ tree_1 <- ggtree(Tree_data,
              extend = 0.35,
              fontsize = 4) +
   geom_strip(taxa1 = "Lepage Creek", 
-             taxa2 = "Spring Brook",
+             taxa2 = "Tributary to Smokey Hollow",
              label = "B",
              align = FALSE,
              barsize = 1,
-             hjust = -0.4,
-             offset = 0.086,
+             hjust = -0.3,
+             offset = 0.062,
              extend = 0.35,
              fontsize = 4) +
-  geom_strip(taxa1 = "Lowry Creek", 
+  geom_strip(taxa1 = "Spring Brook", 
              taxa2 = "Lowery Creek",
              label = "C",
              align = FALSE,
              barsize = 1,
              hjust = -0.4,
-             offset = 0.03,
+             offset = 0.037,
              extend = 0.35,
              fontsize = 4) +
   geom_strip(taxa1 = "Unnamed trib to Maple Dale Creek", 
-             taxa2 = "Little Scarboro Creek",
+             taxa2 = "Flume Creek",
              label = "D",
              align = FALSE,
              barsize = 1,
@@ -114,22 +114,22 @@ tree_1 <- ggtree(Tree_data,
              offset = 0.076,
              extend = 0.35,
              fontsize = 4) +
-  geom_strip(taxa1 = "Tagatz Creek", 
-             taxa2 = "Flume Creek",
+  geom_strip(taxa1 = "Laxey Creek", 
+             taxa2 = "Devils Creek",
              label = "E",
              align = FALSE,
              barsize = 1,
              hjust = -0.4,
-             offset = 0.036,
+             offset = 0.065,
              extend = 0.35,
              fontsize = 4) +
-  geom_strip(taxa1 = "Laxey Creek", 
+  geom_strip(taxa1 = "Bruce Creek", 
              taxa2 = "Lunch Creek",
              label = "F",
              align = FALSE,
              barsize = 1,
              hjust = -0.4,
-             offset = 0.065,
+             offset = 0.03,
              extend = 0.35,
              fontsize = 4) +
   scale_colour_manual(name = "Subregion (HUC 4)", # Can use this or scale_color_discrete()
@@ -158,4 +158,25 @@ ggsave(filename = "Best_NJtree_2205.png",
        height = 10,
        width = 9,
        units = "in")
+
+###################################################################################
+#### Add WI Driftless Area map to the dendrogram to prepare it for publication ####
+###################################################################################
+library(magick)
+
+# Read png of the dendrogram back in
+tree_bare <- image_read("C:/filepath.../Figure_pdfs_pngs/Best_NJtree_2205.png")
+
+# Read in png of my custom WI driftless HUC 4 map
+map <- image_read("C:/filepath.../Figure_pdfs_pngs/HUCs_Driftless_map.png")
+
+# Scale the map appropriately
+scaled_map <- image_scale(image_background(map, "none"), "x950")
+
+# Create a composite image and write the image as a new png
+tree_plus_map <- image_composite(image = tree_bare,
+                                 composite_image = scaled_map,
+                                 offset = "+1800+1600")
+
+image_write(tree_plus_map, path = "C:/filepath.../Figure_pdfs_pngs/Best_NJtree_2205_plus_map.png", format = "png")
 
