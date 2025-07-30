@@ -17,7 +17,7 @@ library(patchwork)
 # n.pca must be =< k-1 (only k-1 PCs are biologically informative)
 
 #### Read and prep the data ####
-# Read in 2205 genetic data
+# Read in 2205 genetic data (do not use the genind with the 30 random domestic strain fish)
 Data_2205 <- read.genepop("X:/filepath.../2205_All_63pops.gen", 
                           ncode = 3L, 
                           quiet = FALSE)
@@ -109,14 +109,14 @@ Assignment_probs %>%
             overall_sd = round(sd(Probability), 3)*100)
 
 # Means by NJ tree groupings
-Tree_groupings <- read_csv("X:/filepath.../Structure_relatedness/Trees/Tree_groups.csv")
+Tree_groupings <- read_csv("C:/filepath.../Structure_relatedness/Trees/Tree_groups.csv")
 
-Group_hatch_ID <- Assignment_probs %>% 
+Assignment_probs %>% 
   filter(Cluster == "St. Croix Falls Strain") %>% 
   left_join(Tree_groupings) %>% 
   group_by(Tree_group) %>% 
-  summarize(Ave_hatchery_ID = round(mean(Probability), 3),
-            SD = round(sd(Probability), 3))
+  summarize(Ave_hatchery_ID = round(mean(Probability), 3)*100,
+            SD = round(sd(Probability), 3)*100)
 
 # Mean St.Croix influence (Mean assignment probability to hatchery group)
 Ave_hatchery_ID <- Assignment_probs %>% 
